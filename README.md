@@ -39,7 +39,16 @@ Finally, while PostgreSQL does have scaling capabilities as mentioned earlier, i
 With the benefits and drawbacks to other database systems (such as MongoDB) considered, I have decided that PostgreSQL is appropriate for the requirements of this app.
 
 ### R4. Identify and discuss the key functionalities and benefits of an ORM
-ORM in general, SQLAlchemy
+
+An ORM, or Object Relational Mapper, bridges the gap between data representations in databases (often relational databases) and object-oriented programs. 
+
+In most cases, when one wants to interact with a database using objected-oriented programming languages, regular operations such as creating, reading, updating and deleting (CRUD) data from a database is the norm. And usually, this would occur through using SQL to perform these operations in a relational database. That's why one of the key functionalities and benefits of an ORM is that it helps simplify this by allowing users the ability to use their language of choice to interact with the database, without needing to necessarily learn or use SQL. 
+
+Additionally, relationship mapping is made easier with an ORM as it allows users to define the classes or objects, which then map to the database table. This includes mapping the object instances, the attributes and even the type of relationship, such as one-to-one, many-to-many, etc., which greatly simplifies the relationship between many entities.
+
+One such ORM is called SQLAlchemy, and is the ORM that will be used for this project. A function and benefit of SQLAlchemy is that it will allow Python code to be used to map the database schema to the app's Python objects. Technically, by using SQLAlchemy, no SQL would be required to create, maintain and query the database. This will allow SQLAlchemy to handle the underlying database. 
+
+A benefit many developers enjoy with SQLAlchemy is that it allows them to write Python code in their project to map from the database schema to the applications' Python objects. No SQL is required to create, maintain and query the database. The mapping allows SQLAlchemy to handle the underlying database so developers can work with their Python objects instead of writing bridge code to get data in and out of relational tables. As SQLAlchemy enables queries written in Python, it makes it simpler for the developer and for those already familiar with Python to read. Similarly, construction of queries that may be complex or unknown in SQL are made easier through writing the query in Python instead. Also, on the security front, because SQLAlchemy automatically escapes user input, it can effectively prevent malicious attempts of SQL injection or code execution.
 
 ### R5. List of endpoints
 

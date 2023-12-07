@@ -1,6 +1,11 @@
+# Adding imports for Flask, SQLAlchemy, etc.
 from flask import Flask
-app = Flask(__name__)
+from flask_sqlalchemy import SQLAlchemy 
 
-@app.route("/")
-def hello():
-  return "Hello World!"
+# Initialising the app
+app = Flask(__name__)
+# Setting the database URI via SQLAlchemy
+app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql+psycopg2://db_dev:123456@localhost:5432/trello_clone_db"
+
+# Creating the database object 'db'
+db = SQLAlchemy(app)
