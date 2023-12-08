@@ -155,7 +155,9 @@ def get_games():
     #returning the result in JSON format
     return jsonify(result)
 
+
 # Route: Register new User
+
 @app.route("/auth/register", methods=["POST"])
 def auth_register():
     # Loading the request data in a user_schema, which is converted to JSON
@@ -181,3 +183,19 @@ def auth_register():
     db.session.commit()
     # Return the user to check the request was successful
     return jsonify(user_schema.dump(user))
+
+
+# Route: Authenticate and login user /auth/login
+
+@app.route("/auth/login", methods=["POST"])
+def auth_login():
+    # Get the user data from the 'request'
+    user_fields = user_schema.load(request.json)
+    # Find the user by email address 
+    stmt = db.select(User).filter_by(email=request.json['email'])
+    user = db.session.scalar(stmt)
+    # If the user doesn't exist or if the password is incorrect, send an error
+    if not user or not bcrypt.check_password_hash(user.password, user_fields["password"]):
+        return abort(401, description="Incorrect username and/or password")
+    
+    return "token"
