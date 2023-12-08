@@ -3,13 +3,17 @@ from flask import Flask, jsonify
 from flask_sqlalchemy import SQLAlchemy 
 from flask_marshmallow import Marshmallow # Importing for serialisation
 from marshmallow.validate import Length # Importing for password length
+from flask_bcrypt import Bcrypt
 
 # Initialising the app
 app = Flask(__name__)
-ma = Marshmallow(app)
 
 # Setting the database URI via SQLAlchemy
 app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql+psycopg2://dev:123456@localhost:5432/game_tracker"
+
+# Creating required objects for Marshmallow, bcrypt, etc.
+ma = Marshmallow(app)
+bcrypt = Bcrypt(app)
 
 # Creating the database object 'db'
 db = SQLAlchemy(app)
@@ -72,7 +76,7 @@ users_schema = UserSchema(many=True)
 @app.cli.command("create")
 def create_db():
     db.create_all()
-    print("Tables created")
+    print("Game and User tables created")
 
 # Seed game entries into the 'games' table
 @app.cli.command("seed")
@@ -103,24 +107,25 @@ def seed_db():
 
     # Commiting the changes
     db.session.commit()
-    print("Table seeded")
+    print("Game table seeded")
 
     # Seeding the initial users - one admin and one non-admin
     admin_user = User(
-        email = "admin",
-        password = "password123",
+        email = "admin@email.com",
+        # Encrypt the password with bcrypt
+        password = bcrypt.generate_password_hash("password123").decode("utf-8"),
         admin = True
     )
     db.session.add(admin_user)
 
     user1 = User(
-        email = "user1",
-        password = "123456"
+        email = "user1@email.com",
+        password = bcrypt.generate_password_hash("123456").decode("utf-8")
     )
     db.session.add(user1)
     
     db.session.commit()
-    print("Table seeded") 
+    print("User table seeded") 
 
 
 # CLI Command for dropping the tables 
@@ -128,7 +133,7 @@ def seed_db():
 @app.cli.command("drop")
 def drop_db():
     db.drop_all()
-    print("Tables dropped") 
+    print("All tables dropped") 
 
 # -- ROUTES --
 
