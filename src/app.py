@@ -1,5 +1,5 @@
 # Adding imports for Flask, SQLAlchemy, etc.
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request, abort
 from flask_sqlalchemy import SQLAlchemy 
 from flask_marshmallow import Marshmallow # Importing for serialisation
 from marshmallow.validate import Length # Importing for password length
@@ -143,7 +143,7 @@ def drop_db():
 def hello():
   return "Hello World!"
 
-# Route: GET /games
+# Route: GET list of /games
 
 @app.route("/games", methods=["GET"])
 def get_games():
@@ -154,3 +154,30 @@ def get_games():
     result = cards_schema.dump(games)
     #returning the result in JSON format
     return jsonify(result)
+
+# Route: Register new User
+@app.route("/auth/register", methods=["POST"])
+def auth_register():
+    # Loading the request data in a user_schema, which is converted to JSON
+    user_fields = user_schema.load(request.json)
+    # Find the user by email address first
+    stmt = db.select(User).filter_by(email=request.json['email'])
+    # Creating the user object
+    user = db.session.scalar(stmt)
+
+    # Validate that the email doesn't already exist
+    if user:
+        # Return an abort message 
+        return abort(400, description="Email already registered")
+    # Create the user object
+    user = User()
+
+    # Adding the email attribute
+    user.email = user_fields["email"]
+    # Adding the password attribute which is hashed by bcrypt
+    user.password = bcrypt.generate_password_hash(user_fields["password"]).decode("utf-8")
+    # Add the created user to the database and commit the changes
+    db.session.add(user)
+    db.session.commit()
+    # Return the user to check the request was successful
+    return jsonify(user_schema.dump(user))
