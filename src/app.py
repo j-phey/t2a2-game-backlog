@@ -3,7 +3,7 @@ from flask_sqlalchemy import SQLAlchemy # Importing ORM
 from flask_marshmallow import Marshmallow # Importing for serialisation
 from marshmallow.validate import Length # Importing for password length
 from flask_bcrypt import Bcrypt # Importing for password hashing
-from flask_jwt_extended import JWTManager, create_access_token, jwt_required # Required for JWT token actions
+from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity # Required for JWT token actions
 from datetime import timedelta, date # Required for JWT token expiry
 
 # Initialising the app
@@ -59,7 +59,7 @@ class GameSchema(ma.Schema):
 game_schema = GameSchema()
 
 # Multiple game schema, when many games need to be retrieved
-cards_schema = GameSchema(many=True)
+games_schema = GameSchema(many=True)
 
 # User Schema
 class UserSchema(ma.SQLAlchemyAutoSchema):
@@ -116,7 +116,7 @@ def seed_db():
     admin_user = User(
         email = "admin@email.com",
         # Encrypt the password with bcrypt
-        password = bcrypt.generate_password_hash("password123").decode("utf-8"),
+        password = bcrypt.generate_password_hash("123456").decode("utf-8"),
         admin = True
     )
     db.session.add(admin_user)
@@ -146,6 +146,7 @@ def drop_db():
 def hello():
   return "Hello World!"
 
+# - GAME ROUTES -
 
 # Route: GET list of /games
 
@@ -155,7 +156,7 @@ def get_games():
     stmt = db.select(Game)
     games = db.session.scalars(stmt)
     # Converting the games from the database into a JSON format and storing them in 'result'
-    result = cards_schema.dump(games)
+    result = games_schema.dump(games)
     #returning the result in JSON format
     return jsonify(result)
 
@@ -183,6 +184,40 @@ def game_create():
     return jsonify(game_schema.dump(new_game))
 
 
+# Route: Delete a game
+
+# /<int:id> lets the server know what game we want to delete 
+@app.route("/games/<int:id>", methods=["DELETE"])
+@jwt_required()
+# Include the id parameter
+def game_delete(id):
+    # Get the user id by invoking get_jwt_identity()
+    user_id = get_jwt_identity()
+    # Find the user in the db
+    stmt = db.select(User).filter_by(id=user_id)
+    user = db.session.scalar(stmt)
+    # Make sure the user is in the database
+    if not user:
+        return abort(401, description="Invalid user")
+    # Prevents the request if the user is not an admin
+    if not user.admin:
+        return abort(401, description="Unauthorised user")
+
+    # Find the game
+    stmt = db.select(Game).filter_by(id=id)
+    game = db.session.scalar(stmt)
+    # Return an error if the game doesn't exist
+    if not game:
+        return abort(400, description= "Game doesn't exist")
+    #D elete the game from the database and commit the change
+    db.session.delete(game)
+    db.session.commit()
+    # Return the game as the response
+    return jsonify(game_schema.dump(game))
+
+
+# - USER ROUTES -
+
 # Route: Register new User
 
 @app.route("/auth/register", methods=["POST"])
@@ -205,6 +240,8 @@ def auth_register():
     user.email = user_fields["email"]
     # Adding the password attribute which is hashed by bcrypt
     user.password = bcrypt.generate_password_hash(user_fields["password"]).decode("utf-8")
+    #set the admin attribute to False
+    user.admin = False
     # Add the created user to the database and commit the changes
     db.session.add(user)
     db.session.commit()
