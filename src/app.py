@@ -2,6 +2,7 @@
 from flask import Flask, jsonify
 from flask_sqlalchemy import SQLAlchemy 
 from flask_marshmallow import Marshmallow # Importing for serialisation
+from marshmallow.validate import Length # Importing for password length
 
 # Initialising the app
 app = Flask(__name__)
@@ -16,6 +17,7 @@ db = SQLAlchemy(app)
 # -- MODELS --
 # Create the models, which are classes that allow object creation and creates the structure that will be used as a table and its rows in the database.
 
+# Game() model
 class Game(db.Model):
     # Defining the table name for the db
     __tablename__= "games"
@@ -27,7 +29,19 @@ class Game(db.Model):
     platform = db.Column(db.String())
     genre = db.Column(db.String())
 
-#creating the Game Schema with Marshmallow for serialisation. Coverting the data into JSON.
+# User() model
+class User(db.Model):
+    __tablename__ = "users"
+
+    id = db.Column(db.Integer, primary_key=True)
+    email = db.Column(db.String(), nullable=False, unique=True)
+    password = db.Column(db.String(), nullable=False)
+    admin = db.Column(db.Boolean(), default=False)
+
+
+# -- SCHEMAS --
+
+# creating the Game Schema with Marshmallow for serialisation. Coverting the data into JSON.
 
 class GameSchema(ma.Schema):
     class Meta:
@@ -39,6 +53,18 @@ card_schema = GameSchema()
 
 # Multiple game schema, when many games need to be retrieved
 cards_schema = GameSchema(many=True)
+
+# User Schema
+class UserSchema(ma.SQLAlchemyAutoSchema):
+    class Meta:
+        model = User
+    fields = ("email", "password", "admin")  
+    #set the password's length to a minimum of 6 characters
+    password = ma.String(validate=Length(min=6))
+
+user_schema = UserSchema()
+users_schema = UserSchema(many=True)
+
 
 # -- CLI COMMANDS --
 
@@ -78,6 +104,24 @@ def seed_db():
     # Commiting the changes
     db.session.commit()
     print("Table seeded")
+
+    # Seeding the initial users - one admin and one non-admin
+    admin_user = User(
+        email = "admin",
+        password = "password123",
+        admin = True
+    )
+    db.session.add(admin_user)
+
+    user1 = User(
+        email = "user1",
+        password = "123456"
+    )
+    db.session.add(user1)
+    
+    db.session.commit()
+    print("Table seeded") 
+
 
 # CLI Command for dropping the tables 
 
