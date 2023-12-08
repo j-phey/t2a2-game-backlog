@@ -52,6 +52,13 @@ A benefit many developers enjoy with SQLAlchemy is that it allows them to write 
 
 ### R5. List of endpoints
 
+- / root
+- @app.route("/games", methods=["GET"])
+- @app.route("/games", methods=["POST"])
+- @app.route("/auth/register", methods=["POST"])
+- @app.route("/auth/login", methods=["POST"])
+- @app.route("/games/<int:id>", methods=["DELETE"])
+
 ### R6. Entity relationship diagram (ERD)
 
 ### R7. Third party services used
