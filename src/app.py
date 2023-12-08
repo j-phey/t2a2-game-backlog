@@ -1,19 +1,22 @@
-# Adding imports for Flask, SQLAlchemy, etc.
 from flask import Flask, jsonify, request, abort
-from flask_sqlalchemy import SQLAlchemy 
+from flask_sqlalchemy import SQLAlchemy # Importing ORM
 from flask_marshmallow import Marshmallow # Importing for serialisation
 from marshmallow.validate import Length # Importing for password length
-from flask_bcrypt import Bcrypt
+from flask_bcrypt import Bcrypt # Importing for password hashing
+from flask_jwt_extended import JWTManager, create_access_token # Required for JWT token
+from datetime import timedelta # Required for JWT token expiry
 
 # Initialising the app
 app = Flask(__name__)
 
 # Setting the database URI via SQLAlchemy
 app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql+psycopg2://dev:123456@localhost:5432/game_tracker"
+app.config["JWT_SECRET_KEY"] = "Backend best end" 
 
-# Creating required objects for Marshmallow, bcrypt, etc.
+# Creating required objects for Marshmallow, bcrypt, JWTManager etc.
 ma = Marshmallow(app)
 bcrypt = Bcrypt(app)
+jwt = JWTManager(app)
 
 # Creating the database object 'db'
 db = SQLAlchemy(app)
@@ -197,5 +200,10 @@ def auth_login():
     # If the user doesn't exist or if the password is incorrect, send an error
     if not user or not bcrypt.check_password_hash(user.password, user_fields["password"]):
         return abort(401, description="Incorrect username and/or password")
-    
-    return "token"
+
+    # Creating a variable that sets an expiry date for the JWT token
+    expiry = timedelta(days=1) # Expires after 'x' days
+    # Creating the access token
+    access_token = create_access_token(identity=str(user.id), expires_delta=expiry)
+    # Return the user email and the access token as a response
+    return jsonify({"user":user.email, "token": access_token })
