@@ -9,10 +9,6 @@ from datetime import timedelta, date # Required for JWT token expiry
 # Initialising the app
 app = Flask(__name__)
 
-# Setting the database URI via SQLAlchemy
-app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql+psycopg2://dev:123456@localhost:5432/game_tracker"
-app.config["JWT_SECRET_KEY"] = "Backend best end" 
-
 # Creating required objects for Marshmallow, bcrypt, JWTManager etc.
 ma = Marshmallow(app)
 bcrypt = Bcrypt(app)
@@ -20,6 +16,21 @@ jwt = JWTManager(app)
 
 # Creating the database object 'db'
 db = SQLAlchemy(app)
+
+
+def create_app():
+    
+    # Create the Flask app object 
+    app = Flask(__name__)
+
+    # Configure our app with config file:
+    app.config.from_object("config.app_config")
+
+    # Create our database object 'db' to utilise ORM
+    db = SQLAlchemy(app)
+
+    return app
+
 
 # -- MODELS --
 # Create the models, which are classes that allow object creation and creates the structure that will be used as a table and its rows in the database.
