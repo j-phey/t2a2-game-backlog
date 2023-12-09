@@ -22,6 +22,19 @@ def get_games():
     # Returning the result in JSON format
     return jsonify(result)
 
+# Route: GET a single game 
+@games.route("/<int:id>/", methods=["GET"])
+def get_game(id):
+    stmt = db.select(Game).filter_by(id=id)
+    game = db.session.scalar(stmt)
+    # Returns an error if the game doesn't exist
+    if not game:
+        return abort(400, description= "Game does not exist")
+    # Convert the games from the database into a JSON format and store them in result
+    result = game_schema.dump(game)
+    # return the data in JSON format
+    return jsonify(result)
+
 
 #  Route: POST Create a new game entry
 
@@ -45,7 +58,6 @@ def game_create():
     return jsonify(game_schema.dump(new_game))
 
 
-
 # Route: Delete a game
 
 # /<int:id> lets the server know what game we want to delete 
@@ -53,17 +65,17 @@ def game_create():
 @jwt_required()
 # Include the id parameter
 def game_delete(id):
-    # # Get the user id by invoking get_jwt_identity()
-    # user_id = get_jwt_identity()
-    # # Find the user in the db
-    # stmt = db.select(User).filter_by(id=user_id)
-    # user = db.session.scalar(stmt)
-    # # Make sure the user is in the database
-    # if not user:
-    #     return abort(401, description="Invalid user")
-    # # Prevents the request if the user is not an admin
-    # if not user.admin:
-    #     return abort(401, description="Unauthorised user")
+    # Get the user id by invoking get_jwt_identity()
+    user_id = get_jwt_identity()
+    # Find the user in the db
+    stmt = db.select(User).filter_by(id=user_id)
+    user = db.session.scalar(stmt)
+    # Make sure the user is in the database
+    if not user:
+        return abort(401, description="Invalid user")
+    # Prevents the request if the user is not an admin
+    if not user.admin:
+        return abort(401, description="Unauthorised user")
 
     # Find the game
     stmt = db.select(Game).filter_by(id=id)
