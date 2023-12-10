@@ -58,7 +58,8 @@ def game_create():
     return jsonify(game_schema.dump(new_game))
 
 
-# Update a game POST route 
+# Route: Update a game 
+ 
 @games.route("/<int:id>/", methods=["PUT"])
 @jwt_required()
 def update_game(id):
@@ -125,3 +126,22 @@ def game_delete(id):
     db.session.commit()
     # Return the game as the response
     return jsonify(game_schema.dump(game))
+
+
+# Route: Search / Filter for a game
+
+@games.route("/search", methods=["GET"])
+def search_games():
+    # Create an empty list in case the query string is not valid
+    games_list = []
+    # Allow searching by genre and platform
+    if request.args.get('genre'):
+        stmt = db.select(Game).filter_by(genre= request.args.get('genre'))
+        games_list = db.session.scalars(stmt)
+    elif request.args.get('platform'):
+        stmt = db.select(Game).filter_by(platform= request.args.get('platform'))
+        games_list = db.session.scalars(stmt)
+
+    result = games_schema.dump(games_list)
+    # Return the data in JSON format
+    return jsonify(result)
