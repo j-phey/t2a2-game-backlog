@@ -43,11 +43,13 @@ def get_single_currently_playing(id):
 def currently_playing_create():
     #Create a currently_playing entry
     currently_playing_fields = currently_playing_single_schema.load(request.json)
-
+    # get the id from jwt
+    user_id = get_jwt_identity()
     new_currently_playing = CurrentlyPlaying()
     new_currently_playing.progress = currently_playing_fields["progress"]
     new_currently_playing.date_added = date.today()
-
+    # Use that id to set the ownership of the card
+    new_currently_playing.user_id = user_id
     # Add to the database and commit
     db.session.add(new_currently_playing)
     db.session.commit()
