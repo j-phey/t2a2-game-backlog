@@ -83,19 +83,19 @@ def seed_db():
     print("'games' table seeded")
 
     # Seeding the initial users - one admin and one non-admin
-    admin_user = User(
-        email = "admin@email.com",
+    user1 = User(
+        email = "user1@email.com",
         # Encrypt the password with bcrypt
         password = bcrypt.generate_password_hash("123456").decode("utf-8"),
         admin = True
     )
-    db.session.add(admin_user)
-
-    user1 = User(
-        email = "user1@email.com",
-        password = bcrypt.generate_password_hash("123456").decode("utf-8")
-    )
     db.session.add(user1)
+
+    # user2 = User(
+    #     email = "user1@email.com",
+    #     password = bcrypt.generate_password_hash("123456").decode("utf-8")
+    # )
+    # db.session.add(user1)
     
     db.session.commit()
     print("'users' table seeded") 
@@ -118,7 +118,8 @@ def seed_db():
     currently_playing1 = CurrentlyPlaying(
       # Setting the attributes, but excluding the id as SQLAlchemy manages that
       progress = "50%",
-      date_added = date.today()
+      date_added = date.today(),
+      user = user1
     )
     # Adding the object as a new row to the 'currently_playing' table
     db.session.add(currently_playing1)

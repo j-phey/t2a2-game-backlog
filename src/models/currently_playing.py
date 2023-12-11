@@ -10,3 +10,8 @@ class CurrentlyPlaying(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     progress = db.Column(db.String())
     date_added = db.Column(db.Date())
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
+    user = db.relationship(
+        "User",
+        back_populates="currently_playing"
+    )
