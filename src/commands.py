@@ -37,7 +37,7 @@ def seed_db():
     # Adding the object as a new row to the 'games' table
     db.session.add(game1)
     
-    # Creating the second game object
+    # Creating the second game object, etc.
     game2 = Game(
       title = "Rainbow Six Siege",
       description = "Online tactical shooter",
@@ -47,6 +47,36 @@ def seed_db():
     )
     # Adding the object as a new row to the 'games' table
     db.session.add(game2)
+
+    game3 = Game(
+      title = "Cyberpunk 2077",
+      description = "Action RPG set in a dystopian future",
+      release_date = "2020-12-10",
+      platform = "PS4",
+      genre = "RPG"
+    )
+    # Adding the object as a new row to the 'games' table
+    db.session.add(game3)
+
+    game4 = Game(
+      title = "The Legend of Zelda: Breath of the Wild",
+      description = "Open-world action-adventure in Hyrule",
+      release_date = "2017-03-03",
+      platform = "Nintendo Switch",
+      genre = "Adventure"
+    )
+    # Adding the object as a new row to the 'games' table
+    db.session.add(game4)
+
+    game5 = Game(
+      title = "Hades",
+      description = "Action roguelike set in the Underworld",
+      release_date = "2020-09-17",
+      platform = "Nintendo Switch",
+      genre = "Roguelike"
+    )
+    # Adding the object as a new row to the 'games' table
+    db.session.add(game5)
 
     # Commiting the changes
     db.session.commit()
