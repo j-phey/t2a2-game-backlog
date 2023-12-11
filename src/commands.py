@@ -3,6 +3,9 @@ from flask import Blueprint
 from main import bcrypt
 from models.games import Game
 from models.users import User
+from models.backlog import Backlog
+from models.currently_playing import CurrentlyPlaying
+from models.wishlist import Wishlist
 from datetime import date
 
 db_commands = Blueprint("db", __name__)
@@ -16,12 +19,12 @@ db_commands = Blueprint("db", __name__)
 @db_commands.cli.command("create")
 def create_db():
     db.create_all()
-    print("Game and User tables created")
+    print("'games', 'userse', 'currently_playing', 'backlog', 'wishlist' tables created")
 
 # Seed game entries into the 'games' table
 @db_commands.cli.command("seed")
 def seed_db():
-    # from datetime import date
+    from datetime import date
     # Creating the first game object
     game1 = Game(
       # Setting the attributes, but excluding the id as SQLAlchemy manages that
@@ -47,7 +50,7 @@ def seed_db():
 
     # Commiting the changes
     db.session.commit()
-    print("Game table seeded")
+    print("'games' table seeded")
 
     # Seeding the initial users - one admin and one non-admin
     admin_user = User(
@@ -65,7 +68,46 @@ def seed_db():
     db.session.add(user1)
     
     db.session.commit()
-    print("User table seeded") 
+    print("'users' table seeded") 
+
+
+    # Seeding an entry into the backlog
+    backlog_game1 = Backlog(
+      # Setting the attributes, but excluding the id as SQLAlchemy manages that
+      status = "Not played",
+      date_added = date.today()
+    )
+    # Adding the object as a new row to the 'backlog' table
+    db.session.add(backlog_game1)
+
+    db.session.commit()
+    print("'backlog' table seeded")     
+
+
+    # Seeding an entry into the currently playing games table
+    currently_playing1 = CurrentlyPlaying(
+      # Setting the attributes, but excluding the id as SQLAlchemy manages that
+      progress = "50%",
+      date_added = date.today()
+    )
+    # Adding the object as a new row to the 'currently_playing' table
+    db.session.add(currently_playing1)
+
+    db.session.commit()
+    print("'currently_playing' table seeded")     
+
+
+    # Seeding an entry into the wishlist table
+    wishlist1 = Wishlist(
+      # Setting the attributes, but excluding the id as SQLAlchemy manages that
+      priority = "High",
+      date_added = date.today()
+    )
+    # Adding the object as a new row to the 'wishlist' table
+    db.session.add(wishlist1)
+
+    db.session.commit()
+    print("'wishlist' table seeded")    
 
 
 # CLI Command for dropping the tables 
