@@ -17,8 +17,14 @@ class CurrentlyPlaying(db.Model):
         back_populates="currently_playing"
     )
 
-    games = db.relationship(
+    game_id = db.Column(db.Integer, db.ForeignKey("games.id"), nullable=False)
+    game = db.relationship(
         "Game",
-        back_populates="currently_playing",
-        cascade="all, delete"
+        back_populates="currently_playing"
     )
+
+    # games = db.relationship(
+    #     "Game",
+    #     back_populates="currently_playing",
+    #     cascade="all, delete"
+    # )
