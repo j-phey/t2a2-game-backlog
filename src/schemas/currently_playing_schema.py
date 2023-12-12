@@ -1,11 +1,14 @@
 from main import ma
+from marshmallow import fields
 
 # creating the Currently Playing Schema with Marshmallow for serialisation. Coverting the data into JSON.
 
 class CurrentlyPlayingSchema(ma.Schema):
     class Meta:
         # Fields to expose
-        fields = ("id", "progress", "date_added")
+        fields = ("id", "progress", "date_added", "user")
+    user =  fields.Nested("UserSchema", only=("email",))
+
 
 # Single currently_playing schema, when one game needs to be retrieved
 currently_playing_single_schema = CurrentlyPlayingSchema()
