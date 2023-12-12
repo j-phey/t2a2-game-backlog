@@ -13,3 +13,9 @@ class Game(db.Model):
     release_date = db.Column(db.Date())
     platform = db.Column(db.String())
     genre = db.Column(db.String())
+
+    currently_playing_id = db.Column(db.Integer, db.ForeignKey("currently_playing.id"), nullable=False)
+    currently_playing = db.relationship(
+        "CurrentlyPlaying",
+        back_populates="games"
+    )
