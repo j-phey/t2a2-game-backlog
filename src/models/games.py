@@ -14,8 +14,17 @@ class Game(db.Model):
     platform = db.Column(db.String())
     genre = db.Column(db.String())
 
+    # Relationship with currently_playing
     currently_playing = db.relationship(
         "CurrentlyPlaying",
         back_populates="game",
         cascade="all, delete"
     )
+
+    # Relationship with backlog
+    backlog = db.relationship(
+        "Backlog",
+        back_populates="game",
+        cascade="all, delete"
+    )
+

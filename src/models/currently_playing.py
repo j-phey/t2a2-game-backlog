@@ -11,12 +11,14 @@ class CurrentlyPlaying(db.Model):
     progress = db.Column(db.String())
     date_added = db.Column(db.Date())
 
+    # Create Foreign Key for User
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
     user = db.relationship(
         "User",
         back_populates="currently_playing"
     )
 
+    # Create Foreign Key for Game
     game_id = db.Column(db.Integer, db.ForeignKey("games.id"), nullable=False)
     game = db.relationship(
         "Game",

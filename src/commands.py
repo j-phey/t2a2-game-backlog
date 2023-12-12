@@ -105,7 +105,9 @@ def seed_db():
     backlog_game1 = Backlog(
       # Setting the attributes, but excluding the id as SQLAlchemy manages that
       status = "Not played",
-      date_added = date.today()
+      date_added = date.today(),
+      user = user1,
+      game = game2
     )
     # Adding the object as a new row to the 'backlog' table
     db.session.add(backlog_game1)

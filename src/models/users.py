@@ -10,8 +10,17 @@ class User(db.Model):
     email = db.Column(db.String(), nullable=False, unique=True)
     password = db.Column(db.String(), nullable=False)
     admin = db.Column(db.Boolean(), default=False)
+
+    # Relationship with currently_playing
     currently_playing = db.relationship(
         "CurrentlyPlaying",
+        back_populates="user",
+        cascade="all, delete"
+    )
+
+    # Relationship with backlog
+    backlog = db.relationship(
+        "Backlog",
         back_populates="user",
         cascade="all, delete"
     )
