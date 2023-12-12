@@ -1,14 +1,16 @@
 from main import ma
 from marshmallow.validate import Length # Importing for password length
 from models.users import User
+from marshmallow import fields
 
 # User Schema
 class UserSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
-        model = User
-    fields = ("email", "password", "admin")  
+        fields = ("email", "password", "admin", "currently_playing")  # Include what the user is currently playing when called
+        load_only = ['password', 'admin'] # Setting to load_only so they won't show up when dump is invoked
     #set the password's length to a minimum of 6 characters
     password = ma.String(validate=Length(min=6))
+    currently_playing = fields.List(fields.Nested("CurrentlyPlayingSchema", exclude=("user",)))
 
 user_schema = UserSchema()
 users_schema = UserSchema(many=True)

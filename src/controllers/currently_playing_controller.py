@@ -3,6 +3,7 @@ from main import db
 from models.currently_playing import CurrentlyPlaying
 from models.users import User
 from schemas.currently_playing_schema import currently_playing_single_schema, currently_playing_many_schema
+from schemas.user_schema import user_schema, users_schema
 from datetime import date
 from flask_jwt_extended import jwt_required, get_jwt_identity
 
@@ -121,3 +122,14 @@ def currently_playing_delete(id):
     db.session.commit()
     # Return the currently_playing as the response
     return jsonify(currently_playing_single_schema.dump(currently_playing))
+
+# GET a user's currently playing games
+@currently_playing.route("/users", methods=["GET"])
+def get_users():
+    # Get the user from the database table
+    stmt = db.select(User)
+    users_list = db.session.scalars(stmt)
+    # Convert the users from the database into a JSON format and store them in result
+    result = users_schema.dump(users_list)
+    # return the data in JSON format
+    return jsonify(result)

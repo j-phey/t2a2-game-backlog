@@ -17,6 +17,7 @@ def create_app():
 
     # Configure our app with config file:
     app.config.from_object("config.app_config")
+    app.json.sort_keys = False # Ensures right sort instead of alphabetically
 
     # Create our database object 'db' to utilise ORM
     db.init_app(app)
