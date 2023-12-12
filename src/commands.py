@@ -19,7 +19,7 @@ db_commands = Blueprint("db", __name__)
 @db_commands.cli.command("create")
 def create_db():
     db.create_all()
-    print("'games', 'userse', 'currently_playing', 'backlog', 'wishlist' tables created")
+    print("'games', 'users', 'currently_playing', 'backlog', 'wishlist' tables created")
 
 # Seed game entries into the 'games' table
 @db_commands.cli.command("seed")
