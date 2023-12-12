@@ -117,13 +117,24 @@ def seed_db():
     # Seeding an entry into the currently playing games table
     currently_playing1 = CurrentlyPlaying(
       # Setting the attributes, but excluding the id as SQLAlchemy manages that
-      progress = "50%",
+      progress = "Ongoing",
       date_added = date.today(),
       user = user1,
       game = game1
     )
     # Adding the object as a new row to the 'currently_playing' table
     db.session.add(currently_playing1)
+
+    # Seeding an entry into the currently playing games table
+    currently_playing2 = CurrentlyPlaying(
+      # Setting the attributes, but excluding the id as SQLAlchemy manages that
+      progress = "50%",
+      date_added = date.today(),
+      user = user1,
+      game = game4
+    )
+    # Adding the object as a new row to the 'currently_playing' table
+    db.session.add(currently_playing2)
 
     db.session.commit()
     print("'currently_playing' table seeded")     
