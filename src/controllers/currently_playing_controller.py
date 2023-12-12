@@ -2,8 +2,10 @@ from flask import Blueprint, jsonify, request, abort
 from main import db
 from models.currently_playing import CurrentlyPlaying
 from models.users import User
+from models.games import Game
 from schemas.currently_playing_schema import currently_playing_single_schema, currently_playing_many_schema
 from schemas.user_schema import user_schema, users_schema
+from schemas.game_schema import game_schema, games_schema
 from datetime import date
 from flask_jwt_extended import jwt_required, get_jwt_identity
 
@@ -49,8 +51,14 @@ def currently_playing_create():
     new_currently_playing = CurrentlyPlaying()
     new_currently_playing.progress = currently_playing_fields["progress"]
     new_currently_playing.date_added = date.today()
-    # Use that id to set the ownership of the card
+
+    # Use that user id to set the ownership of the entry
     new_currently_playing.user_id = user_id
+
+    # Allow Game ID to be added to body 
+    game_id = currently_playing_fields["game_id"]
+    new_currently_playing.game_id = game_id
+
     # Add to the database and commit
     db.session.add(new_currently_playing)
     db.session.commit()

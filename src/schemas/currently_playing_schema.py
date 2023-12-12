@@ -7,7 +7,7 @@ class CurrentlyPlayingSchema(ma.Schema):
     class Meta:
         ordered = True # Sets the right order instead of alphabetically
         # Fields to expose
-        fields = ("id", "progress", "date_added", "user")
+        fields = ("id", "progress", "date_added", "user", "game_id")
     user =  fields.Nested("UserSchema", only=("email",))
 
 
