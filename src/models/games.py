@@ -28,3 +28,9 @@ class Game(db.Model):
         cascade="all, delete"
     )
 
+    # Relationship with wishlist
+    wishlist = db.relationship(
+        "Wishlist",
+        back_populates="game",
+        cascade="all, delete"
+    )

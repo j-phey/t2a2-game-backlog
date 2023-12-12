@@ -24,3 +24,10 @@ class User(db.Model):
         back_populates="user",
         cascade="all, delete"
     )
+
+    # Relationship with wishlist
+    wishlist = db.relationship(
+        "Wishlist",
+        back_populates="user",
+        cascade="all, delete"
+    )

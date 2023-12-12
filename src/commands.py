@@ -146,7 +146,9 @@ def seed_db():
     wishlist1 = Wishlist(
       # Setting the attributes, but excluding the id as SQLAlchemy manages that
       priority = "High",
-      date_added = date.today()
+      date_added = date.today(),
+      user = user1,
+      game = game3
     )
     # Adding the object as a new row to the 'wishlist' table
     db.session.add(wishlist1)
