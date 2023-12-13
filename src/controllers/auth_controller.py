@@ -5,6 +5,7 @@ from schemas.user_schema import user_schema, users_schema
 from datetime import timedelta
 from flask_jwt_extended import create_access_token
 from werkzeug.exceptions import BadRequest # Handle BadRequests from Flask
+from marshmallow.exceptions import ValidationError # Handles Marshmallow ValidationErrors
 
 auth = Blueprint('auth', __name__, url_prefix="/auth")
 
@@ -78,3 +79,8 @@ def key_error(e):
 @auth.errorhandler(BadRequest)
 def default_error(e):
     return jsonify({'error': e.description}), 400
+
+# Handles Marshmallow Validation errors (e.g. field left empty)
+@auth.errorhandler(ValidationError)
+def validation_error(e):
+    return jsonify(e.messages), 400 # messages has dictionary of errors

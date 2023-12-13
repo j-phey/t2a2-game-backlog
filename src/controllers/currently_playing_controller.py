@@ -9,6 +9,7 @@ from schemas.game_schema import game_schema, games_schema
 from datetime import date
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from werkzeug.exceptions import BadRequest # Handle BadRequests from Flask
+from marshmallow.exceptions import ValidationError # Handles Marshmallow ValidationErrors
 
 currently_playing = Blueprint('currently_playing', __name__, url_prefix="/currently_playing")
 
@@ -156,3 +157,8 @@ def key_error(e):
 @currently_playing.errorhandler(BadRequest)
 def default_error(e):
     return jsonify({'error': e.description}), 400
+
+# Handles Marshmallow Validation errors (e.g. field left empty)
+@currently_playing.errorhandler(ValidationError)
+def validation_error(e):
+    return jsonify(e.messages), 400 # messages has dictionary of errors

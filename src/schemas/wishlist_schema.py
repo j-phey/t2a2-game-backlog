@@ -1,9 +1,15 @@
 from main import ma
 from marshmallow import fields
+# Ensure field length is >0, OneOf pre-defined fields, matches Regexp
+from marshmallow.validate import Length, OneOf, Regexp, And
+
+# Constants for valid values
+VALID_PRIORITIES = ('Low', 'Medium', 'High')
 
 # creating the Wishlist Schema with Marshmallow for serialisation. Coverting the data into JSON.
-
 class WishlistSchema(ma.Schema):
+    priority = fields.String(required=True, validate=OneOf(VALID_PRIORITIES))
+
     class Meta:
         # Fields to expose
         fields = ("id", "priority", "date_added", "user", "game_id", "game")

@@ -6,6 +6,7 @@ from schemas.wishlist_schema import wishlist_single_schema, wishlist_many_schema
 from datetime import date
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from werkzeug.exceptions import BadRequest # Handle BadRequests from Flask
+from marshmallow.exceptions import ValidationError # Handles Marshmallow ValidationErrors
 
 wishlist = Blueprint('wishlist', __name__, url_prefix="/wishlist")
 
@@ -142,3 +143,8 @@ def key_error(e):
 @wishlist.errorhandler(BadRequest)
 def default_error(e):
     return jsonify({'error': e.description}), 400
+
+# Handles Marshmallow Validation errors (e.g. field left empty)
+@wishlist.errorhandler(ValidationError)
+def validation_error(e):
+    return jsonify(e.messages), 400 # messages has dictionary of errors
