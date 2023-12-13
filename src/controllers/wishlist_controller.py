@@ -5,6 +5,7 @@ from models.users import User
 from schemas.wishlist_schema import wishlist_single_schema, wishlist_many_schema
 from datetime import date
 from flask_jwt_extended import jwt_required, get_jwt_identity
+from werkzeug.exceptions import BadRequest # Handle BadRequests from Flask
 
 wishlist = Blueprint('wishlist', __name__, url_prefix="/wishlist")
 
@@ -126,3 +127,18 @@ def wishlist_delete(id):
     db.session.commit()
     # Return the wishlist as the response
     return jsonify(wishlist_single_schema.dump(wishlist))
+
+
+# -- ERROR HANDLING --
+
+# Attaching a handler to the blueprint (errorhandler method) to catch KeyError exceptions raised
+@wishlist.errorhandler(KeyError)
+def key_error(e):
+    # Convert the description of the error to JSON
+    return jsonify({'error': f'The field {e} is required'}), 400
+    # JSON e.g.: "error": "The field 'game_id' is required"
+
+# Handle BadRequest errors from Flask (e.g. when request is not JSON)
+@wishlist.errorhandler(BadRequest)
+def default_error(e):
+    return jsonify({'error': e.description}), 400

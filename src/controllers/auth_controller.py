@@ -4,6 +4,7 @@ from models.users import User
 from schemas.user_schema import user_schema, users_schema
 from datetime import timedelta
 from flask_jwt_extended import create_access_token
+from werkzeug.exceptions import BadRequest # Handle BadRequests from Flask
 
 auth = Blueprint('auth', __name__, url_prefix="/auth")
 
@@ -63,3 +64,17 @@ def auth_login():
     access_token = create_access_token(identity=str(user.id), expires_delta=expiry)
     # Return the user email and the access token as a response
     return jsonify({"user": user.email, "token": access_token })
+
+# -- ERROR HANDLING --
+
+# Attaching a handler to the blueprint (errorhandler method) to catch KeyError exceptions raised
+@auth.errorhandler(KeyError)
+def key_error(e):
+    # Convert the description of the error to JSON
+    return jsonify({'error': f'The field {e} is required'}), 400
+    # JSON e.g.: "error": "The field 'email' is required"
+
+# Handle BadRequest errors from Flask (e.g. when request is not JSON)
+@auth.errorhandler(BadRequest)
+def default_error(e):
+    return jsonify({'error': e.description}), 400

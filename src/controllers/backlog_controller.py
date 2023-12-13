@@ -5,6 +5,7 @@ from models.users import User
 from schemas.backlog_schema import backlog_single_schema, backlog_many_schema
 from datetime import date
 from flask_jwt_extended import jwt_required, get_jwt_identity
+from werkzeug.exceptions import BadRequest # Handle BadRequests from Flask
 
 backlog = Blueprint('backlog', __name__, url_prefix="/backlog")
 
@@ -126,3 +127,17 @@ def backlog_delete(id):
     db.session.commit()
     # Return the backlog as the response
     return jsonify(backlog_single_schema.dump(backlog))
+
+# -- ERROR HANDLING --
+
+# Attaching a handler to the blueprint (errorhandler method) to catch KeyError exceptions raised
+@backlog.errorhandler(KeyError)
+def key_error(e):
+    # Convert the description of the error to JSON
+    return jsonify({'error': f'The field {e} is required'}), 400
+    # JSON e.g.: "error": "The field 'game_id' is required"
+
+# Handle BadRequest errors from Flask (e.g. when request is not JSON)
+@backlog.errorhandler(BadRequest)
+def default_error(e):
+    return jsonify({'error': e.description}), 400

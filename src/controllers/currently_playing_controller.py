@@ -8,6 +8,7 @@ from schemas.user_schema import user_schema, users_schema
 from schemas.game_schema import game_schema, games_schema
 from datetime import date
 from flask_jwt_extended import jwt_required, get_jwt_identity
+from werkzeug.exceptions import BadRequest # Handle BadRequests from Flask
 
 currently_playing = Blueprint('currently_playing', __name__, url_prefix="/currently_playing")
 
@@ -141,3 +142,17 @@ def get_users():
     result = users_schema.dump(users_list)
     # return the data in JSON format
     return jsonify(result)
+
+# -- ERROR HANDLING --
+
+# Attaching a handler to the blueprint (errorhandler method) to catch KeyError exceptions raised
+@currently_playing.errorhandler(KeyError)
+def key_error(e):
+    # Convert the description of the error to JSON
+    return jsonify({'error': f'The field {e} is required'}), 400
+    # JSON e.g.: "error": "The field 'game_id' is required"
+
+# Handle BadRequest errors from Flask (e.g. when request is not JSON)
+@currently_playing.errorhandler(BadRequest)
+def default_error(e):
+    return jsonify({'error': e.description}), 400
