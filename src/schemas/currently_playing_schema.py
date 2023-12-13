@@ -1,9 +1,16 @@
 from main import ma
 from marshmallow import fields # Allows fields to be nested
+# Ensure field length is >0, OneOf pre-defined fields, matches Regexp
+from marshmallow.validate import Length, OneOf, Regexp, And
+
+# Constants for valid values
+VALID_PROGRESS = ('Ongoing', '25%', '50%', '75%', '100%')
 
 # creating the Currently Playing Schema with Marshmallow for serialisation. Coverting the data into JSON.
 
 class CurrentlyPlayingSchema(ma.Schema):
+    progress = fields.String(required=True, validate=OneOf(VALID_PROGRESS)) # Value is OneOf the above constants
+
     class Meta:
         ordered = True # Sets the right order instead of alphabetically
         # Fields to expose
