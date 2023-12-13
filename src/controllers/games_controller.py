@@ -6,6 +6,7 @@ from schemas.game_schema import game_schema, games_schema
 from datetime import date
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from werkzeug.exceptions import BadRequest # Handle BadRequests from Flask
+from marshmallow.exceptions import ValidationError # Handles Marshmallow ValidationErrors
 
 games = Blueprint('games', __name__, url_prefix="/games")
 
@@ -160,3 +161,8 @@ def key_error(e):
 @games.errorhandler(BadRequest)
 def default_error(e):
     return jsonify({'error': e.description}), 400
+
+# Handles Marshmallow Validation errors (e.g. field left empty)
+@games.errorhandler(ValidationError)
+def validation_error(e):
+    return jsonify(e.messages), 400 # messages has dictionary of errors
