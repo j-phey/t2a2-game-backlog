@@ -43,10 +43,17 @@ def get_single_wishlist(id):
 def wishlist_create():
     #Create a wishlist entry
     wishlist_fields = wishlist_single_schema.load(request.json)
-
+    user_id = get_jwt_identity()
     new_wishlist = Wishlist()
     new_wishlist.priority = wishlist_fields["priority"]
     new_wishlist.date_added = date.today()
+
+    # Use that user id to set the ownership of the entry
+    new_wishlist.user_id = user_id
+
+    # Allow Game ID to be added to body 
+    game_id = wishlist_fields["game_id"]
+    new_wishlist.game_id = game_id
 
     # Add to the database and commit
     db.session.add(new_wishlist)

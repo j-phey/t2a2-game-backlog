@@ -43,10 +43,17 @@ def get_single_backlog(id):
 def backlog_create():
     #Create a backlog entry
     backlog_fields = backlog_single_schema.load(request.json)
-
+    user_id = get_jwt_identity()
     new_backlog = Backlog()
     new_backlog.status = backlog_fields["status"]
     new_backlog.date_added = date.today()
+
+    # Use that user id to set the ownership of the entry
+    new_backlog.user_id = user_id
+
+    # Allow Game ID to be added to body 
+    game_id = backlog_fields["game_id"]
+    new_backlog.game_id = game_id
 
     # Add to the database and commit
     db.session.add(new_backlog)

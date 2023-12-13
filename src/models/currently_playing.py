@@ -24,9 +24,3 @@ class CurrentlyPlaying(db.Model):
         "Game",
         back_populates="currently_playing"
     )
-
-    # games = db.relationship(
-    #     "Game",
-    #     back_populates="currently_playing",
-    #     cascade="all, delete"
-    # )
