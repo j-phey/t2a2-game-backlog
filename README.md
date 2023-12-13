@@ -2,7 +2,7 @@
 
 ## API Webserver: Video Game Tracker
 
-### R1. Identification of the problem you are trying to solve by building this particular app.
+### R1. Identification of the problem you are trying to solve by building this particular app
 
 There are several problems when it comes to keeping up with video games. As life happens, people who play video games often accumulate a backlog of unfinished games, leading to indecision and stress about which game to play next. This problem simply compounds as new games are released on a weekly basis. In this day and age, there is a steady and constant stream of new games being released weekly, leading to missed release dates and the choice paralysis of finishing a currently owned game compared to the desire to play the latest release. 
 
@@ -58,8 +58,13 @@ A benefit many developers enjoy with SQLAlchemy is that it allows them to write 
 - @app.route("/auth/register", methods=["POST"])
 - @app.route("/auth/login", methods=["POST"])
 - @app.route("/games/<int:id>", methods=["DELETE"])
+- @games.route("/<int:id>/", methods=["GET"])
+- @games.route("/<int:id>/", methods=["PUT"])
+- @games.route("/search", methods=["GET"]) (http://127.0.0.1:5000/games/search?genre=FPS)
+- @currently_playing.route("/", methods=["GET"])
 
 ### R6. Entity relationship diagram (ERD)
+![Game Tracker ERD](./docs/Game_Tracker_ERD.png 'Game Tracker ERD')
 
 ### R7. Third party services used
 
