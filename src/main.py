@@ -2,7 +2,7 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy # Importing ORM
 from flask_marshmallow import Marshmallow # Importing for serialisation
 from flask_bcrypt import Bcrypt # Importing for password hashing
-from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity # Required for JWT token actions
+from flask_jwt_extended import JWTManager # Required for JWT token actions
 
 # Creating required objects for Marshmallow, bcrypt, JWTManager etc.
 ma = Marshmallow()

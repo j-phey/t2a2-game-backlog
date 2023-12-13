@@ -1,7 +1,7 @@
 from main import ma
 from marshmallow import fields
 # Ensure field length is >0, OneOf pre-defined fields, matches Regexp
-from marshmallow.validate import Length, OneOf, Regexp, And
+from marshmallow.validate import OneOf
 
 # Constants for valid values
 VALID_PRIORITIES = ('Low', 'Medium', 'High')

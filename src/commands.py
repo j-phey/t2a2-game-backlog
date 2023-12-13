@@ -6,7 +6,6 @@ from models.users import User
 from models.backlog import Backlog
 from models.currently_playing import CurrentlyPlaying
 from models.wishlist import Wishlist
-from datetime import date
 
 db_commands = Blueprint("db", __name__)
 

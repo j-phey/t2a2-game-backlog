@@ -1,7 +1,7 @@
 from main import ma
 from marshmallow import fields # Allows fields to be nested
 # Ensure field length is >0, OneOf pre-defined fields, matches Regexp
-from marshmallow.validate import Length, OneOf, Regexp, And
+from marshmallow.validate import OneOf
 
 # Constants for valid values
 VALID_PROGRESS = ('Ongoing', '25%', '50%', '75%', '100%')

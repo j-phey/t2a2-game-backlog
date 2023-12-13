@@ -1,7 +1,7 @@
 from main import ma
 from marshmallow import fields
 # Ensure field length is >0, OneOf pre-defined fields, matches Regexp
-from marshmallow.validate import Length, OneOf, Regexp, And
+from marshmallow.validate import OneOf
 
 # Constants for valid values
 VALID_STATUSES = ('Not Played', 'New Game+ playthrough', 'Dropped')
@@ -10,7 +10,7 @@ VALID_STATUSES = ('Not Played', 'New Game+ playthrough', 'Dropped')
 
 class BacklogSchema(ma.Schema):
     status = fields.String(load_default='Not Played', validate=OneOf(VALID_STATUSES)) # Default load
-    
+
     class Meta:
         # Fields to expose
         fields = ("id", "status", "date_added", "user", "game_id", "game")

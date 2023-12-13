@@ -2,10 +2,8 @@ from flask import Blueprint, jsonify, request, abort
 from main import db
 from models.currently_playing import CurrentlyPlaying
 from models.users import User
-from models.games import Game
 from schemas.currently_playing_schema import currently_playing_single_schema, currently_playing_many_schema
-from schemas.user_schema import user_schema, users_schema
-from schemas.game_schema import game_schema, games_schema
+from schemas.user_schema import users_schema #, user_schema
 from datetime import date
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from werkzeug.exceptions import BadRequest # Handle BadRequests from Flask

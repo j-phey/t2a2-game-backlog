@@ -1,6 +1,5 @@
 from main import ma
 from marshmallow.validate import Length # Importing for password length
-from models.users import User
 from marshmallow import fields
 
 # User Schema
