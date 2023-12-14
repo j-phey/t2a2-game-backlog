@@ -1,5 +1,8 @@
 # Coder Academy - T2A2 - Jonathan Phey
 
+### GitHub Repo
+[**t2a2-game-backlog** - GitHub repository link](https://github.com/j-phey/t2a2-game-backlog)
+
 ## API Webserver: Video Game Tracker
 
 ### R1. Identification of the problem you are trying to solve by building this particular app
@@ -250,6 +253,33 @@ A benefit many developers enjoy with SQLAlchemy is that it allows them to write 
 - **Authentication method:** Valid JWT token, admin required
 - ![Endpoint - DELETE /wishlist](./docs/endpoint_delete_wishlist.png 'Endpoint - DELETE /wishlist')
 
+#### **Error and exception handling**
+
+Error and exception handling were also built into each controller file to ensure the routes and endpoints were displaying an appropriate message when required information is missing or inappropriate information is provided in the body. Examples of how this was implemented and endpoint screenshots are below.
+
+```py
+# Attaching a handler to the blueprint (errorhandler method) to catch KeyError exceptions raised
+@auth.errorhandler(KeyError)
+def key_error(e):
+    # Convert the description of the error to JSON
+    return jsonify({'error': f'The field {e} is required'}), 400
+    # JSON e.g.: "error": "The field 'email' is required"
+
+# Handle BadRequest errors from Flask (e.g. when request is not JSON)
+@auth.errorhandler(BadRequest)
+def default_error(e):
+    return jsonify({'error': e.description}), 400
+
+# Handles Marshmallow Validation errors (e.g. field left empty)
+@auth.errorhandler(ValidationError)
+def validation_error(e):
+    return jsonify(e.messages), 400 # messages has dictionary of errors
+```
+*Password Length*
+![Error - password length](./docs/error_password_length.png 'Error - password length')
+*Field validation*
+![Error - field validation](./docs/error_field_validation.png 'Error - field validation')
+
 ### R6. Entity relationship diagram (ERD)
 
 Below is the Entity Relationship Diagram (ERD) for the game tracker app. The entities are users, games, currently playing games (currently_playing), games in backlog (backlog) and wishlisted games (wishlist). 
@@ -263,33 +293,37 @@ The users columns are purposely kept at a minimum to reduce unnecessary PII. The
 ### R7. Third party services used
 
 **Flask (`flask`)**
-- Description: Flask is a lightweight web application framework for Python, providing tools and libraries for building web applications.
-- Usage: Flask is the core framework that organises the overarching templates and blueprints for the app and facilitates features such as API routes for the user authentication and game backlog.
+- **Description:** Flask is a lightweight web application framework for Python, providing tools and libraries for building web applications.
+- **Usage:** Flask is the core framework that organises the overarching templates and blueprints (`Blueprint`) for the app and facilitates features such as API routes for the user authentication and game backlog. `jsonify` was used for serialisation and `request` and `abort` were used for controllers.
 
-- **SQLAlchemy (`flask_sqlalchemy`)**
+**SQLAlchemy (`flask_sqlalchemy`)**
+- **Description:** SQLAlchemy is an ORM (Object-Relational Mapping) library that simplifies database interactions for SQL databases.
+- **Usage:** Used for defining the game tracker's models, mapping them to database tables, and executing database queries, facilitating data storage for the entities such as games and users.
 
+**`joinedload` (part of `sqlalchemy.orm`)**
+- **Description:** Part of SQLAlchemy, provides eager loading for related objects to prevent lazy loading issues.
+- **Usage:** In a couple of routes of entities such as wishlist, backlog, and currently_playing, I used `joinedload` to eagerly load the 'game' relationship when fetching the relevant instances, ensuring that the associated 'game' object is loaded along with the main object in a single query to avoid lazy loading issues.
 
-LAZY LOAD THING
+**Marshmallow (`flask_marshmallow`)**
+- **Description:** Marshmallow is an object serialisation and deserialisation library for converting data types to and from Python objects and JSON.
+- **Usage:** Enabled serialisation and deserialisation of data structures in the game tracker app, helping to transform database objects to JSON for API responses and vice versa.
 
-#### Python package dependencies
+**Bcrypt (`flask_bcrypt`)**
+- **Description:** Bcrypt is a password hashing library for securely storing user passwords in a hashed format.
+- **Usage:** Utilised for secure password hashing during user registration and authentication processes.
 
-#### Other third party services used to create this project
-- **Version control:** [GitHub](https://github.com/jjjjjjpppppp/)
-- **Project management:** [Linear](https://linear.app/)
+**JWTManager (`flask_jwt_extended`)**
+- **Description:** JWTManager is a library for JSON Web Token (JWT) support in Flask applications, allowing secure user authentication and authorisation.
+- **Usage:** Implements the JSON Web Tokens for user authentication, allowing users to securely access protected routes based on their credentials.
+
+**Other Libraries** (`os`, `marshmallow.validate`, `datetime`, `werkzeug.exceptions`)
+- **Usage:** These libraries provided additional functionality such as handling environmental variables (os), defining validation rules (marshmallow.validate), working with dates (datetime), and handling errors and exceptions (werkzeug.exceptions) in various parts of the application.
 
 ### R8. Projects models in terms of the relationships they have with each other
 
 ### R9. Database relations to be implemented in the application
 
 ### R10. How tasks are allocated and tracked in this project
-
-### GitHub Repo
-[**t2a2-game-backlog** - GitHub repository link](https://github.com/j-phey/t2a2-game-backlog)
-
-### Python package dependencies
-- colorama==0.4.6
-- rich==13.6.0
-- art==6.1
 
 ### Software development and implementation plan
 
@@ -304,6 +338,8 @@ LAZY LOAD THING
 - 29 October 2023
 ![Plan screenshot 15](./docs/2023-10-29_6.01.26pm.png 'Plan screenshot 2023-10-29_6.01.26pm')
 
+- **Version control:** [GitHub](https://github.com/jjjjjjpppppp/)
+- **Project management:** [Linear](https://linear.app/)
 
 ### References
 
