@@ -7,6 +7,7 @@ from datetime import date
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from werkzeug.exceptions import BadRequest # Handle BadRequests from Flask
 from marshmallow.exceptions import ValidationError # Handles Marshmallow ValidationErrors
+from sqlalchemy.orm import joinedload # For lazy loading issues
 
 backlog = Blueprint('backlog', __name__, url_prefix="/backlog")
 
@@ -83,9 +84,11 @@ def update_backlog(id):
     # Stop the request if the user is not an admin
     if not user.admin:
         return abort(401, description="Unauthorised user")
-    # Find the entry
-    stmt = db.select(Backlog).filter_by(id=id)
+
+    # Find the entry with eager loading of 'game' relationship
+    stmt = db.select(Backlog).options(joinedload(Backlog.game)).filter_by(id=id)
     backlog = db.session.scalar(stmt)
+
     # Return an error if the backlog doesn't exist
     if not backlog:
         return abort(400, description= "Game does not exist")
@@ -117,9 +120,10 @@ def backlog_delete(id):
     if not user.admin:
         return abort(401, description="Unauthorised user")
 
-    # Find the backlog id
-    stmt = db.select(Backlog).filter_by(id=id)
+    # Find the entry with eager loading of 'game' relationship
+    stmt = db.select(Backlog).options(joinedload(Backlog.game)).filter_by(id=id)
     backlog = db.session.scalar(stmt)
+
     # Return an error if the backlog id doesn't exist
     if not backlog:
         return abort(400, description= "Game doesn't exist")

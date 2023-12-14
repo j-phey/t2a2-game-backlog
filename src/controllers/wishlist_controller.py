@@ -7,6 +7,7 @@ from datetime import date
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from werkzeug.exceptions import BadRequest # Handle BadRequests from Flask
 from marshmallow.exceptions import ValidationError # Handles Marshmallow ValidationErrors
+from sqlalchemy.orm import joinedload # For lazy loading issues
 
 wishlist = Blueprint('wishlist', __name__, url_prefix="/wishlist")
 
@@ -83,9 +84,11 @@ def update_wishlist(id):
     # Stop the request if the user is not an admin
     if not user.admin:
         return abort(401, description="Unauthorised user")
-    # Find the entry
-    stmt = db.select(Wishlist).filter_by(id=id)
+
+    # Find the entry with eager loading of 'game' relationship
+    stmt = db.select(Wishlist).options(joinedload(Wishlist.game)).filter_by(id=id)
     wishlist = db.session.scalar(stmt)
+
     # Return an error if the wishlist doesn't exist
     if not wishlist:
         return abort(400, description= "Game does not exist")
@@ -117,9 +120,10 @@ def wishlist_delete(id):
     if not user.admin:
         return abort(401, description="Unauthorised user")
 
-    # Find the wishlist id
-    stmt = db.select(Wishlist).filter_by(id=id)
+    # Find the entry with eager loading of 'game' relationship
+    stmt = db.select(Wishlist).options(joinedload(Wishlist.game)).filter_by(id=id)
     wishlist = db.session.scalar(stmt)
+
     # Return an error if the wishlist id doesn't exist
     if not wishlist:
         return abort(400, description= "Game doesn't exist")
