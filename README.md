@@ -13,6 +13,8 @@ Also, when one does finish a game, there isn't an easy way to reflect and preser
 
 This app attempts to solve these problems by becoming a single source of information and data for all of your beloved games — finished, unfinished and unreleased.
 
+-----------------------------------
+
 ### R2. Why is it a problem that needs solving?
 
 Many people face the challenge of drowning in a large gaming backlog and the constant fear of missing out on the greatest new releases. The vast sea of video games, the constant stream of releases and the fact that life gets in the way means it's hard to focus on what to play when we finally get some time. A solution is needed to help gamers efficiently manage their backlog, allowing them to focus on the joy of playing rather than feeling burdened by choices.
@@ -22,6 +24,8 @@ Without a reliable way to stay informed about upcoming game releases important t
 When completing a game, not celebrating this can diminish the sense of personal accomplishment. Also, not playing a game for an extended amount of time can make it difficult to recall the story or how to play it. This needs to be solved by an app so that users can track their personal victories and achievements, as well as make it simpler to allow the player to quickly pick up a game again to maximise their playing time.
 
 By solving these problems, game backlogs, libraries and upcoming releases can be streamlined and personal achievements and thoughts and notes on games can be centralised.
+
+-----------------------------------
 
 ### R3. Why have you chosen this database system. What are the drawbacks compared to others?
 
@@ -41,6 +45,8 @@ Finally, while PostgreSQL does have scaling capabilities as mentioned earlier, i
 
 With the benefits and drawbacks to other database systems (such as MongoDB) considered, I have decided that PostgreSQL is appropriate for the requirements of this app.
 
+-----------------------------------
+
 ### R4. Identify and discuss the key functionalities and benefits of an ORM
 
 An ORM, or Object Relational Mapper, bridges the gap between data representations in databases (often relational databases) and object-oriented programs. 
@@ -52,6 +58,8 @@ Additionally, relationship mapping is made easier with an ORM as it allows users
 One such ORM is called SQLAlchemy, and is the ORM that will be used for this project. A function and benefit of SQLAlchemy is that it will allow Python code to be used to map the database schema to the app's Python objects. Technically, by using SQLAlchemy, no SQL would be required to create, maintain and query the database. This will allow SQLAlchemy to handle the underlying database. 
 
 A benefit many developers enjoy with SQLAlchemy is that it allows them to write Python code in their project to map from the database schema to the applications' Python objects. No SQL is required to create, maintain and query the database. The mapping allows SQLAlchemy to handle the underlying database so developers can work with their Python objects instead of writing bridge code to get data in and out of relational tables. As SQLAlchemy enables queries written in Python, it makes it simpler for the developer and for those already familiar with Python to read. Similarly, construction of queries that may be complex or unknown in SQL are made easier through writing the query in Python instead. Also, on the security front, because SQLAlchemy automatically escapes user input, it can effectively prevent malicious attempts of SQL injection or code execution.
+
+-----------------------------------
 
 ### R5. List of endpoints
 
@@ -280,6 +288,8 @@ def validation_error(e):
 *Field validation*
 ![Error - field validation](./docs/error_field_validation.png 'Error - field validation')
 
+-----------------------------------
+
 ### R6. Entity relationship diagram (ERD)
 
 Below is the Entity Relationship Diagram (ERD) for the game tracker app. The entities are users, games, currently playing games (currently_playing), games in backlog (backlog) and wishlisted games (wishlist). 
@@ -289,6 +299,8 @@ The one-to-many relationship between users and currently_playing, backlog and wi
 The users columns are purposely kept at a minimum to reduce unnecessary PII. The columns in games could be increased in the future, such as with information about how long a game would take to beat. Likewise, the columns in the currently_playing, backlog, and wishlist tables could be expanded on, but currently have the necessities for the tables to meet their purposes.
 
 ![Game Tracker ERD](./docs/Game_Tracker_ERD.png 'Game Tracker ERD')
+
+-----------------------------------
 
 ### R7. Third party services used
 
@@ -319,6 +331,8 @@ The users columns are purposely kept at a minimum to reduce unnecessary PII. The
 **Other Libraries** (`os`, `marshmallow.validate`, `datetime`, `werkzeug.exceptions`)
 - **Usage:** These libraries provided additional functionality such as handling environmental variables (os), defining validation rules (marshmallow.validate), working with dates (datetime), and handling errors and exceptions (werkzeug.exceptions) in various parts of the application.
 
+-----------------------------------
+
 ### R8. Projects models in terms of the relationships they have with each other
 
 #### User model (`users.py`)
@@ -336,9 +350,9 @@ The Users model represents a user in the application with attributes such as id,
  The Games model represents a game entry in the application with attributes such as id, title, description, release_date, platform, and genre. The relationships allow each game to be associated with multiple users' currently playing lists, backlogs, and wishlists.
 
  - **Relationships:**
-   - **Currently Playing:** A one-to-many relationship with the CurrentlyPlaying model. A game can be currently played in multiple instances, and each currently playing instance is associated with a single game. The relationship is established through the `currently_playing` attribute in the `Game` model.
-   - **Backlog:** A one-to-many relationship with the Backlog model. A game can be in the backlog of multiple users, and each backlog entry is associated with a single game. The relationship is established through the `backlog` attribute in the `Game` model.
-   - **Wishlist:** A one-to-many relationship with the Wishlist model. A game can be in the wishlist of multiple users, and each wishlist entry is associated with a single game. The relationship is established through the `wishlist` attribute in the `Game` model.
+   - **Currently Playing:** A many-to-one relationship with the CurrentlyPlaying model. Many games can be part of a user's currently playing list. The relationship is established through the `currently_playing` attribute in the `Game` model.
+   - **Backlog:** A many-to-one relationship with the Backlog model. Many games can be within a user's backlog to play. The relationship is established through the `backlog` attribute in the `Game` model.
+   - **Wishlist:** A many-to-one relationship with the Wishlist model. Many games can be part of a user's wishlist. The relationship is established through the `wishlist` attribute in the `Game` model.
 
  #### Backlog model (`backlog.py`)
 
@@ -346,7 +360,7 @@ The Users model represents a user in the application with attributes such as id,
 
 - **Relationships:**
   - **User:** A many-to-one relationship with the User model. Each backlog entry belongs to a single user, and each user can have multiple backlog entries. The relationship is established through the `user` attribute in the `Backlog` model.
-  - **Game:** A many-to-one relationship with the Game model. Each backlog entry is associated with a single game, and each game can be in the backlog of multiple users. The relationship is established through the `game` attribute in the `Backlog` model.
+  - **Game:** A one-to-many relationship with the Game model. Each backlog entry can be associated with many games, and many games can be in the backlog of multiple users. The relationship is established through the `game` attribute in the `Backlog` model.
 
 - **Foreign Keys:**
   - **user_id:** A foreign key referencing the id column in the users table. This links each backlog entry to a specific user.
@@ -358,7 +372,7 @@ The Currently Playing model represents an entry indicating that a user is curren
 
 - **Relationships:*
   - **User:** A many-to-one relationship with the User model. Each currently playing entry belongs to a single user, and each user can have multiple currently playing entries. The relationship is established through the `user` attribute in the `CurrentlyPlaying` model.
-  - **Game:** A many-to-one relationship with the Game model. Each currently playing entry is associated with a single game, and each game can be currently played by multiple users. The relationship is established through the `game` attribute in the `CurrentlyPlaying` model.
+  - **Game:** A one-to-many relationship with the Game model. Each currently playing entry is associated with many games, and many different games can be currently played by multiple users. The relationship is established through the `game` attribute in the `CurrentlyPlaying` model.
 - **Foreign Keys:**
   - **user_id:** A foreign key referencing the id column in the users table. This links each currently playing entry to a specific user.
   - **game_id:** A foreign key referencing the id column in the games table. This links each currently playing entry to a specific game.
@@ -369,32 +383,97 @@ The Wishlist model represents an entry in the user's wishlist, associating a gam
 
 - **Relationships:**
   - **User:** A many-to-one relationship with the User model. Each wishlist entry belongs to a single user, and each user can have multiple wishlist entries. The relationship is established through the `user` attribute in the `Wishlist` model.
-  - **Game:** A many-to-one relationship with the Game model. Each wishlist entry is associated with a single game, and each game can be in the wishlist of multiple users. The relationship is established through the `game` attribute in the `Wishlist` model.
+  - **Game:** A one-to-many relationship with the Game model. A wishlist can contain multiple games. The relationship is established through the `game` attribute in the `Wishlist` model.
 - **Foreign Keys:**
   - **user_id:** A foreign key referencing the id column in the users table. This links each wishlist entry to a specific user.
   - **game_id:** A foreign key referencing the id column in the games table. This links each wishlist entry to a specific game.
+
+-----------------------------------
 
 ### R9. Database relations to be implemented in the application
 
 In the application, a database called "game_tracker" consists of the following tables: users, games, currently_playing, backlog and wishlist. The relations were designed and implemented between the mentioned tables to ensure the application functions and can scale appropriately.
 
+In reference to the ERD in R6, the following relations have been implemented:
+
+### Users
+**User to Currently Playing (One-to-Many):**
+- Each user can have multiple entries in their currently playing list.
+- **ERD Representation:** The `User` entity has a one-to-many relationship with `CurrentlyPlaying`, depicted by a line connecting `User` and `CurrentlyPlaying` with the "1" on the `User` side and "Many" on the `CurrentlyPlaying` side.
+
+**User to Backlog (One-to-Many):**
+- Each user can have multiple games in their backlog.
+- **ERD Representation:** Depicted by a line connecting `User` and `Backlog`, the "1" on the `User` side and "Many" on the `Backlog` side represents that the `User` entity has a one-to-many relationship with `Backlog`.
+
+**User to Wishlist (One-to-Many):**
+- Each user can have multiple games in their wishlist.
+- **ERD Representation:** Similar to the currently playing relationship and backlog representation, the `User` entity has a one-to-many relationship with `Wishlist` depicted by the "1" on the `User` side and the "many" on the `Wishlist` side.
+
+### Games
+
+**Game to Currently Playing (Many-to-One):**
+- Many or more than one game can be part of one's currently playing list.
+- **ERD Representation:** The Game entity is linked to CurrentlyPlaying in a many-to-one relationship with the "Many" on the `Game` side and the "1" on the `CurrentlyPlaying` side.
+
+**Game to Backlog (One-to-Many):**
+- Many or more than one game can be part of one's backlog.
+- **ERD Representation:** The Game entity is linked to Backlog in a many-to-one relationship with the "Many" on the `Game` side and the "1" on the `Backlog` side.
+
+**Game to Wishlist (One-to-Many):**
+- Many or more than one game can be part of one's Wishlist.
+- **ERD Representation:** The Game entity is linked to Backlog in a many-to-one relationship with the "Many" on the `Game` side and the "1" on the `Wishlist` side.
+
+### Backlog, Currently Playing, and Wishlist entities
+
+**Backlog, Currently Playing, and Wishlist to Users (Many-to-One):**
+- Each entry in these lists belongs to one user, but each user can have multiple entries in each list.
+- **ERD Representation:** Each of these entities (Backlog, CurrentlyPlaying, and Wishlist) is connected to User in a many-to-one relationship, with the "1" on the `User` side and the "Many" on the `Backlog`, `CurrentlyPlaying` and `Wishlist`.
+
+**Backlog, Currently Playing, and Wishlist to Games (One-to-Many):**
+- Each of these lists are associated with one or more games.
+- Each of these entities (Backlog, CurrentlyPlaying, and Wishlist) is connected to Game in a one-tom-many relationship, with the "Many" on the `Games` side and the "1" on the `Backlog`, `CurrentlyPlaying` and `Wishlist`.
+
+-----------------------------------
+
 ### R10. How tasks are allocated and tracked in this project
 
-### Software development and implementation plan
+To build my plan and track my tasks and timelines, I utilised [Linear](https://linear.app/). Generally, I took a screenshotof my plan every day, usually in the morning, which depicted what I had completed the day before and what I would like to achieve the day of.
 
-- To build my plan and track my tasks and timelines, I utilised [Linear](https://linear.app/)
-- Generally, I took two screenshots of my plan every day - at the mid point of my working day and when I decided to stop coding
-- I moved the `Done` tasks to an archive daily, to keep the list clean
-- Most days, I moved tasks to the `Todo` column when I wanted to attempt to complete it on a given day, while attempting to clear `In progress` as a priority (besides the slide deck and README files, which were constants)
+I moved the `Done` tasks to an archive daily, to keep the list clean. Most days, I moved tasks to the `Todo` column when I wanted to attempt to complete it on a given day, while attempting to clear `In progress` as a priority (besides the ongoing README files, which were constants). The daily screenshots are below to represent my software development plan and how I allocated and tracked tasks in this project.
 
+- 4 December 2023
+![Plan screenshot 1](./docs/plan_2023-12-04.png 'plan_2023-12-04')
+- 6 December 2023
+![Plan screenshot 2](./docs/plan_2023-12-06.png 'Plan screenshot 2')
+- 7 December 2023
+![Plan screenshot 3](./docs/plan_2023-12-07.png 'Plan screenshot 3')
+- 8 December 2023
+![Plan screenshot 4](./docs/plan_2023-12-08.png 'Plan screenshot 4')
+- 8 December 2023 (pt 2)
+![Plan screenshot 5](./docs/plan_2023-12-08(2).png 'Plan screenshot 5')
+- 9 December 2023
+![Plan screenshot 6](./docs/plan_2023-12-09.png 'Plan screenshot 6')
+- 10 December 2023
+![Plan screenshot 7](./docs/plan_2023-12-10.png 'Plan screenshot 7')
+- 11 December 2023
+![Plan screenshot 8](./docs/plan_2023-12-11.png 'Plan screenshot 8')
+- 12 December 2023
+![Plan screenshot 9](./docs/plan_2023-12-12.png 'Plan screenshot 9')
+- 13 December 2023
+![Plan screenshot 10](./docs/plan_2023-12-13.png 'Plan screenshot 10')
+- 14 December 2023
+![Plan screenshot 11](./docs/plan_2023-12-14.png 'Plan screenshot 11')
+- 14 December 2023 (pt 2)
+![Plan screenshot 12](./docs/plan_2023-12-14(2).png 'Plan screenshot 12')
 
-- 28 October 2023
-![Plan screenshot 14](./docs/2023-10-28_5.06.56pm.png 'Plan screenshot 2023-10-28_5.06.56pm')
-- 29 October 2023
-![Plan screenshot 15](./docs/2023-10-29_6.01.26pm.png 'Plan screenshot 2023-10-29_6.01.26pm')
-
-- **Version control:** [GitHub](https://github.com/jjjjjjpppppp/)
-- **Project management:** [Linear](https://linear.app/)
+-------
 
 ### References
 
+- Ellingwood, J. (n.d.). What is an ORM (Object Relational Mapper)? Prisma. Retrieved December 6, 2023, from https://www.prisma.io/dataguide/types/relational/what-is-an-orm
+- Google Cloud. (n.d.). PostgreSQL vs. SQL Server: What's the difference? Google Cloud. Retrieved December 6, 2023, from https://cloud.google.com/learn/postgresql-vs-sql
+- Johnston, P. (2015, September 4). 10 Reasons to love SQLAlchemy. Retrieved December 7, 2023, from https://pajhome.org.uk/blog/10_reasons_to_love_sqlalchemy.html
+- LogicMonitor. (2023, March 9). PostgreSQL vs. MySQL PostgreSQL vs. MySQL. LogicMonitor. Retrieved December 6, 2023, from https://www.logicmonitor.com/blog/postgresql-vs-mysql
+- MongoDB. (n.d.). MongoDB Vs PostgreSQL. MongoDB. Retrieved December 6, 2023, from https://www.mongodb.com/compare/mongodb-postgresql
+- Python Code Nemesis. (2023, September 10). SQLAlchemy vs. Raw SQL Queries in Python: A Comparative Example. Python in Plain English. Retrieved December 7, 2023, from https://python.plainenglish.io/sqlalchemy-vs-raw-sql-queries-in-python-a-comparative-example-b7a838ebef82
+- SQLAlchemy. (n.d.). Features. SQLAlchemy. Retrieved December 7, 2023, from https://www.sqlalchemy.org/features.html
