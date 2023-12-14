@@ -8,6 +8,7 @@ from datetime import date
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from werkzeug.exceptions import BadRequest # Handle BadRequests from Flask
 from marshmallow.exceptions import ValidationError # Handles Marshmallow ValidationErrors
+from sqlalchemy.orm import joinedload # For lazy loading issues
 
 currently_playing = Blueprint('currently_playing', __name__, url_prefix="/currently_playing")
 
@@ -16,6 +17,7 @@ currently_playing = Blueprint('currently_playing', __name__, url_prefix="/curren
 # Route: GET list of /currently_playing
 
 @currently_playing.route("/", methods=["GET"])
+@jwt_required()
 def get_currently_playing():
     # Get all the currently playing entries from the database
     stmt = db.select(CurrentlyPlaying)
@@ -27,6 +29,7 @@ def get_currently_playing():
 
 # Route: GET a single currently playing 
 @currently_playing.route("/<int:id>/", methods=["GET"])
+@jwt_required()
 def get_single_currently_playing(id):
     stmt = db.select(CurrentlyPlaying).filter_by(id=id)
     currently_playing = db.session.scalar(stmt)
@@ -76,7 +79,7 @@ def update_currently_playing(id):
 
     # Get the user id by invoking get_jwt_identity
     user_id = get_jwt_identity()
-    # Find the user in the db
+    # Find the user in the db and entry for eager loading with 'game'
     stmt = db.select(User).filter_by(id=user_id)
     user = db.session.scalar(stmt)
     # Make sure the user is in the database
@@ -85,9 +88,11 @@ def update_currently_playing(id):
     # Stop the request if the user is not an admin
     if not user.admin:
         return abort(401, description="Unauthorised user")
-    # Find the entry
-    stmt = db.select(CurrentlyPlaying).filter_by(id=id)
+    
+    # Find the entry with eager loading of 'game' relationship
+    stmt = db.select(CurrentlyPlaying).options(joinedload(CurrentlyPlaying.game)).filter_by(id=id)
     currently_playing = db.session.scalar(stmt)
+    
     # Return an error if the currently_playing doesn't exist
     if not currently_playing:
         return abort(400, description= "Game does not exist")
@@ -119,9 +124,10 @@ def currently_playing_delete(id):
     if not user.admin:
         return abort(401, description="Unauthorised user")
 
-    # Find the currently_playing id
-    stmt = db.select(CurrentlyPlaying).filter_by(id=id)
+    # Find the entry with eager loading of 'game' relationship
+    stmt = db.select(CurrentlyPlaying).options(joinedload(CurrentlyPlaying.game)).filter_by(id=id)
     currently_playing = db.session.scalar(stmt)
+
     # Return an error if the currently_playing id doesn't exist
     if not currently_playing:
         return abort(400, description= "Game doesn't exist")
