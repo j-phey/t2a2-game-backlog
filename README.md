@@ -321,61 +321,62 @@ The users columns are purposely kept at a minimum to reduce unnecessary PII. The
 
 ### R8. Projects models in terms of the relationships they have with each other
 
-#### Users model (`users.py`)
+#### User model (`users.py`)
 
-- **Description:** Represents a user in the application with attributes such as id, email, password, and admin status.
+The Users model represents a user in the application with attributes such as id, email, password, and admin status. The relationships allow each user to have their own lists of currently playing games, backlog entries, and wishlist items. 
+
 - **Relationships:**
-  - **Currently Playing:** A one-to-many relationship with the CurrentlyPlaying model. A user can have multiple currently playing games, and each currently playing game belongs to a single user. The relationship is established through the currently_playing attribute in the User model.
-  - **Backlog:** A one-to-many relationship with the Backlog model. A user can have multiple backlog entries, and each backlog entry belongs to a single user. The relationship is established through the backlog attribute in the User model.
-  - **Wishlist:** A one-to-many relationship with the Wishlist model. A user can have multiple wishlist entries, and each wishlist entry belongs to a single user. The relationship is established through the wishlist attribute in the User model.
-  
-```py
-# User() model
-class User(db.Model):
-    __tablename__ = "users"
-
-    id = db.Column(db.Integer, primary_key=True)
-    email = db.Column(db.String(), nullable=False, unique=True)
-    password = db.Column(db.String(), nullable=False)
-    admin = db.Column(db.Boolean(), default=False)
-
-    # Relationship with currently_playing
-    currently_playing = db.relationship(
-        "CurrentlyPlaying",
-        back_populates="user",
-        cascade="all, delete"
-    )
-
-    # Relationship with backlog
-    backlog = db.relationship(
-        "Backlog",
-        back_populates="user",
-        cascade="all, delete"
-    )
-
-    # Relationship with wishlist
-    wishlist = db.relationship(
-        "Wishlist",
-        back_populates="user",
-        cascade="all, delete"
-    )
-```
-
-#### Games model (`games.py`)
+  - **Currently Playing:** A one-to-many relationship with the CurrentlyPlaying model. A user can have multiple currently playing games, and each currently playing game belongs to a single user. The relationship is established through the `currently_playing` attribute in the `User` model.
+  - **Backlog:** A one-to-many relationship with the Backlog model. A user can have multiple backlog entries, and each backlog entry belongs to a single user. The relationship is established through the `backlog` attribute in the `User` model.
+  - **Wishlist:** A one-to-many relationship with the Wishlist model. A user can have multiple wishlist entries, and each wishlist entry belongs to a single user. The relationship is established through the `wishlist` attribute in the `User` model.
 
 
+#### Game model (`games.py`)
 
-#### Currently playing model (`currently_playing.py`)
+ The Games model represents a game entry in the application with attributes such as id, title, description, release_date, platform, and genre. The relationships allow each game to be associated with multiple users' currently playing lists, backlogs, and wishlists.
 
+ - **Relationships:**
+   - **Currently Playing:** A one-to-many relationship with the CurrentlyPlaying model. A game can be currently played in multiple instances, and each currently playing instance is associated with a single game. The relationship is established through the `currently_playing` attribute in the `Game` model.
+   - **Backlog:** A one-to-many relationship with the Backlog model. A game can be in the backlog of multiple users, and each backlog entry is associated with a single game. The relationship is established through the `backlog` attribute in the `Game` model.
+   - **Wishlist:** A one-to-many relationship with the Wishlist model. A game can be in the wishlist of multiple users, and each wishlist entry is associated with a single game. The relationship is established through the `wishlist` attribute in the `Game` model.
 
+ #### Backlog model (`backlog.py`)
 
-#### Backlog model (`backlog.py`)
+ The Backlog model represents an entry in the backlog, associating a game with a user and capturing attributes such as id, status, and date_added. The relationships  enable the tracking of games in a user's backlog, capturing details such as the status of the game and the date it was added
 
+- **Relationships:**
+  - **User:** A many-to-one relationship with the User model. Each backlog entry belongs to a single user, and each user can have multiple backlog entries. The relationship is established through the `user` attribute in the `Backlog` model.
+  - **Game:** A many-to-one relationship with the Game model. Each backlog entry is associated with a single game, and each game can be in the backlog of multiple users. The relationship is established through the `game` attribute in the `Backlog` model.
 
+- **Foreign Keys:**
+  - **user_id:** A foreign key referencing the id column in the users table. This links each backlog entry to a specific user.
+  - **game_id:** A foreign key referencing the id column in the games table. This links each backlog entry to a specific game.
+
+#### Currently Playing model (`currently_playing.py`)
+
+The Currently Playing model represents an entry indicating that a user is currently playing a specific game, capturing attributes such as id, progress, and date_added. The relationships facilitate tracking which games users are currently playing, capturing details such as the progress in the game and the date it was added to the currently playing list
+
+- **Relationships:*
+  - **User:** A many-to-one relationship with the User model. Each currently playing entry belongs to a single user, and each user can have multiple currently playing entries. The relationship is established through the `user` attribute in the `CurrentlyPlaying` model.
+  - **Game:** A many-to-one relationship with the Game model. Each currently playing entry is associated with a single game, and each game can be currently played by multiple users. The relationship is established through the `game` attribute in the `CurrentlyPlaying` model.
+- **Foreign Keys:**
+  - **user_id:** A foreign key referencing the id column in the users table. This links each currently playing entry to a specific user.
+  - **game_id:** A foreign key referencing the id column in the games table. This links each currently playing entry to a specific game.
 
 #### Wishlist model (`wishlist.py`)
 
+The Wishlist model represents an entry in the user's wishlist, associating a game with a user and capturing attributes such as id, priority, and date_added. The relationships enable the tracking of games in a user's wishlist, capturing details such as the priority of the game and the date it was added.
+
+- **Relationships:**
+  - **User:** A many-to-one relationship with the User model. Each wishlist entry belongs to a single user, and each user can have multiple wishlist entries. The relationship is established through the `user` attribute in the `Wishlist` model.
+  - **Game:** A many-to-one relationship with the Game model. Each wishlist entry is associated with a single game, and each game can be in the wishlist of multiple users. The relationship is established through the `game` attribute in the `Wishlist` model.
+- **Foreign Keys:**
+  - **user_id:** A foreign key referencing the id column in the users table. This links each wishlist entry to a specific user.
+  - **game_id:** A foreign key referencing the id column in the games table. This links each wishlist entry to a specific game.
+
 ### R9. Database relations to be implemented in the application
+
+In the application, a database called "game_tracker" consists of the following tables: users, games, currently_playing, backlog and wishlist. The relations were designed and implemented between the mentioned tables to ensure the application functions and can scale appropriately.
 
 ### R10. How tasks are allocated and tracked in this project
 
