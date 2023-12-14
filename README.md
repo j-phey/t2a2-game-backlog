@@ -321,6 +321,60 @@ The users columns are purposely kept at a minimum to reduce unnecessary PII. The
 
 ### R8. Projects models in terms of the relationships they have with each other
 
+#### Users model (`users.py`)
+
+- **Description:** Represents a user in the application with attributes such as id, email, password, and admin status.
+- **Relationships:**
+  - **Currently Playing:** A one-to-many relationship with the CurrentlyPlaying model. A user can have multiple currently playing games, and each currently playing game belongs to a single user. The relationship is established through the currently_playing attribute in the User model.
+  - **Backlog:** A one-to-many relationship with the Backlog model. A user can have multiple backlog entries, and each backlog entry belongs to a single user. The relationship is established through the backlog attribute in the User model.
+  - **Wishlist:** A one-to-many relationship with the Wishlist model. A user can have multiple wishlist entries, and each wishlist entry belongs to a single user. The relationship is established through the wishlist attribute in the User model.
+  
+```py
+# User() model
+class User(db.Model):
+    __tablename__ = "users"
+
+    id = db.Column(db.Integer, primary_key=True)
+    email = db.Column(db.String(), nullable=False, unique=True)
+    password = db.Column(db.String(), nullable=False)
+    admin = db.Column(db.Boolean(), default=False)
+
+    # Relationship with currently_playing
+    currently_playing = db.relationship(
+        "CurrentlyPlaying",
+        back_populates="user",
+        cascade="all, delete"
+    )
+
+    # Relationship with backlog
+    backlog = db.relationship(
+        "Backlog",
+        back_populates="user",
+        cascade="all, delete"
+    )
+
+    # Relationship with wishlist
+    wishlist = db.relationship(
+        "Wishlist",
+        back_populates="user",
+        cascade="all, delete"
+    )
+```
+
+#### Games model (`games.py`)
+
+
+
+#### Currently playing model (`currently_playing.py`)
+
+
+
+#### Backlog model (`backlog.py`)
+
+
+
+#### Wishlist model (`wishlist.py`)
+
 ### R9. Database relations to be implemented in the application
 
 ### R10. How tasks are allocated and tracked in this project
