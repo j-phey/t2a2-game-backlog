@@ -52,21 +52,224 @@ A benefit many developers enjoy with SQLAlchemy is that it allows them to write 
 
 ### R5. List of endpoints
 
-- / root
-- @app.route("/games", methods=["GET"])
-- @app.route("/games", methods=["POST"])
-- @app.route("/auth/register", methods=["POST"])
-- @app.route("/auth/login", methods=["POST"])
-- @app.route("/games/<int:id>", methods=["DELETE"])
-- @games.route("/<int:id>/", methods=["GET"])
-- @games.route("/<int:id>/", methods=["PUT"])
-- @games.route("/search", methods=["GET"]) (http://127.0.0.1:5000/games/search?genre=FPS)
-- @currently_playing.route("/", methods=["GET"])
+#### User authentication endpoints (`auth_controller.py`)
+**`/auth/register`**
+- **HTTP Request Verb:** POST
+- **Description:** Allows for user registration, where the information is stored in the database.
+- **Required data:** `email`, `password`
+- **Expected response:** `200 OK` response with return of `email` and `token`.
+- **Authentication method:** Authentication not required for new registrations. However, Bcrypt still hashes the password and stores it securely in the database.
+- ![Endpoint - /auth/register](./docs/endpoint_auth_register.png 'Endpoint - /auth/register')
+
+**`/auth/login`**
+- **HTTP Request Verb:** POST
+- **Description:** Allows user to login, generating a JWT token for authorisation.
+- **Required data:** `email`, `password`
+- **Expected response:** `200 OK` response with return of `email` and `token`.
+- **Authentication method:** Valid email and password
+- ![Endpoint - /auth/login](./docs/endpoint_auth_login.png 'Endpoint - /auth/login')
+
+#### Games endpoints (`games_controller.py`)
+**`/games`**
+- **HTTP Request Verb:** GET
+- **Description:** Get a list of all games in the app catalogue.
+- **Required data:** None
+- **Expected response:** `200 OK` response with return of games and game fields in the database.
+- **Authentication method:** None
+- ![Endpoint - /games](./docs/endpoint_get_games.png 'Endpoint - /games')
+
+**`/games/<int:id>`**
+- **HTTP Request Verb:** GET
+- **Description:** Get a single game entry by Game ID.
+- **Required data:** Valid game ID in the URL (e.g. /games/2)
+- **Expected response:** `200 OK` response with return of the corresponding game and it's details.
+- **Authentication method:** None
+- ![Endpoint - /games/id](./docs/endpoint_get_game_id.png 'Endpoint - /games/id')
+
+
+**`/games`**
+- **HTTP Request Verb:** POST
+- **Description:** Create a new game entry
+- **Required data:** `title`, `description`, `release_date`, `genre`, `platform`
+- **Expected response:** `200 OK` response, with the details of the created game and it's assigned game_id.
+- **Authentication method:** Valid JWT token
+- ![Endpoint - POST /games](./docs/endpoint_post_games.png 'Endpoint - POST /games')
+
+**`/games/<int:id>`**
+- **HTTP Request Verb:** PUT
+- **Description:** Update an existing game entry in the catalogue.
+- **Required data:** Existing game ID in the URL, `title`, `description`, `release_date`, `genre`, `platform`
+- **Expected response:** `200 OK` response, with the details of the updated game.
+- **Authentication method:** Valid JWT token, admin required
+- ![Endpoint - PUT /games](./docs/endpoint_put_game.png 'Endpoint - PUT /games')
+
+**`/games/<int:id>`**
+- **HTTP Request Verb:** DELETE
+- **Description:** Delete a game entry in the catalogue
+- **Required data:** Existing game ID in the URL
+- **Expected response:** `200 OK` response, with the details of the deleted game.
+- **Authentication method:** Valid JWT token, admin required
+- ![Endpoint - DELETE /games](./docs/endpoint_delete_game.png 'Endpoint - DELETE /games')
+
+**`/games/search`**
+- **HTTP Request Verb:** GET
+- **Description:** Allows for searching of the game catalogue by specified filters or fields
+- **Required data:** Valid filter / search parameters in the URL e.g. /games/search?genre=FPS
+- **Expected response:** Details of the matching game(s) based on the filter / search paramaters
+- **Authentication method:** None
+- ![Endpoint - search /games](./docs/endpoint_search_game.png 'Endpoint - search /games')
+
+#### Currently Playing endpoints (`currently_playing_controller.py`)
+**`/currently_playing`**
+- **HTTP Request Verb:** GET
+- **Description:** Get a list of games currently being played
+- **Required data:** None
+- **Expected response:** `200 OK` response with return of the user and the details of the game(s) currently playing.
+- **Authentication method:** Valid JWT token
+- ![Endpoint - GET /currently_playing](./docs/endpoint_get_currently_playing.png 'Endpoint - GET /currently_playing')
+
+**`/currently_playing/<int:id>`**
+- **HTTP Request Verb:** GET
+- **Description:** Get a single entry from the list of currently played games.
+- **Required data:** Valid ID in the URL (e.g. /currently_playing/2)
+- **Expected response:** `200 OK` response with return of the user and the details of the game currently playing.
+- **Authentication method:** Valid JWT token
+- ![Endpoint - /currently_playing/id](./docs/endpoint_currently_playing_id.png 'Endpoint - /currently_playing/id')
+
+**`/currently_playing`**
+- **HTTP Request Verb:** POST
+- **Description:** Creates a new entry in the list of games currently playing
+- **Required data:** `game_id`, `progress`
+- **Expected response:** `200 OK` response with return of the user and the details of the game currently playing.
+- **Authentication method:** Valid JWT token
+- ![Endpoint - POST /currently_playing](./docs/endpoint_post_currently_playing.png 'Endpoint - POST /currently_playing')
+
+**`/currently_playing/<int:id>`**
+- **HTTP Request Verb:** PUT
+- **Description:** Update an existing entry in the list of currently playing games
+- **Required data:** Valid ID in the URL (e.g. /currently_playing/2), `progress`
+- **Expected response:** `200 OK` response with return of the updated details (progress) and the game
+- **Authentication method:** Valid JWT token, admin required
+- ![Endpoint - PUT /currently_playing](./docs/endpoint_put_currently_playing.png 'Endpoint - PUT /currently_playing')
+
+**`/currently_playing/<int:id>`**
+- **HTTP Request Verb:** DELETE
+- **Description:** Delete an existing currently playing entry by ID
+- **Required data:** Valid ID in the URL (e.g. /currently_playing/2)
+- **Expected response:** `200 OK` response with return of the deleted details (progress) and the game
+- **Authentication method:** Valid JWT token, admin required
+- ![Endpoint - DELETE /currently_playing](./docs/endpoint_delete_currently_playing.png 'Endpoint - DELETE /currently_playing')
+
+**`/currently_playing/users`**
+- **HTTP Request Verb:** GET
+- **Description:** Retrieve a list of users and the games they are currently playing.
+- **Required data:** None
+- **Expected response:** `200 OK` response with return of the users and the game details that are currently being played
+- ![Endpoint - /currently_playing/users](./docs/endpoint_currently_playing_users.png 'Endpoint - /currently_playing/users')
+
+#### Backlog endpoints (`backlog_controller.py`)
+**`/backlog`**
+- **HTTP Request Verb:** GET
+- **Description:** Get a list of games in the backlog
+- **Required data:** None
+- **Expected response:** `200 OK` response with return of the user and the details of the game(s) currently in the backlog
+- **Authentication method:** None
+- ![Endpoint - GET /backlog](./docs/endpoint_get_backlog.png 'Endpoint - GET /backlog')
+
+**`/backlog/<int:id>`**
+- **HTTP Request Verb:** GET
+- **Description:** Get a single entry from the backlog.
+- **Required data:** Valid ID in the URL (e.g. /backlog/1)
+- **Expected response:** `200 OK` response with return of the user and the corresponding backlog game
+- **Authentication method:** None
+- ![Endpoint - /backlog/id](./docs/endpoint_backlog_id.png 'Endpoint - /backlog/id')
+
+**`/backlog`**
+- **HTTP Request Verb:** POST
+- **Description:** Adds a game into the backlog (defaults to `Not Played` status)
+- **Required data:** `game_id`
+- **Expected response:** `200 OK` response with return of the user and the game title/id added to backlog
+- **Authentication method:** Valid JWT token
+- ![Endpoint - POST /backlog](./docs/endpoint_post_backlog.png 'Endpoint - POST /backlog')
+
+**`/backlog/<int:id>`**
+- **HTTP Request Verb:** PUT
+- **Description:** Updates the status of a backlog entry
+- **Required data:** Valid ID in the URL (e.g. /currently_playing/2), `status` (expected, not mandatory)
+- **Expected response:** `200 OK` response with return of the user and the game title/id updated in the backlog
+- **Authentication method:** Valid JWT token, admin required
+- ![Endpoint - PUT /backlog](./docs/endpoint_put_backlog.png 'Endpoint - PUT /backlog')
+
+
+**`/backlog/<int:id>`**
+- **HTTP Request Verb:** DELETE
+- **Description:** Delete an entry in the game backlog
+- **Required data:**  Valid ID in the URL (e.g. /currently_playing/1)
+- **Expected response:** `200 OK` response with return of the game and details deleted
+- **Authentication method:** Valid JWT token, admin required
+- ![Endpoint - DELETE /backlog](./docs/endpoint_delete_backlog.png 'Endpoint - DELETE /backlog')
+
+#### Wishlist endpoints (`wishlist_controller.py`)
+**`/wishlist`**
+- **HTTP Request Verb:** GET
+- **Description:** Get a list of games currently in the wishlist
+- **Required data:** None
+- **Expected response:** `200 OK` response with return of the user and the details of the game(s) in the wishlist
+- **Authentication method:** None
+- ![Endpoint - GET /wishlist](./docs/endpoint_get_wishlist.png 'Endpoint - GET /wishlist')
+
+**`/wishlist/<int:id>`**
+- **HTTP Request Verb:** GET
+- **Description:** Get a single entry from the wishlist.
+- **Required data:** Valid ID in the URL (e.g. /wishlist/1)
+- **Expected response:** `200 OK` response with return of the user and the corresponding wishlisted game
+- **Authentication method:** None
+- ![Endpoint - /wishlist/id](./docs/endpoint_get_wishlist_id.png 'Endpoint - /wishlist/id')
+
+**`/wishlist`**
+- **HTTP Request Verb:** POST
+- **Description:** Adds a game into the wishlist
+- **Required data:** `game_id`, `priority`
+- **Expected response:** `200 OK` response with return of the user and the game title/id added to wishlist
+- **Authentication method:** Valid JWT token
+- ![Endpoint - POST /wishlist](./docs/endpoint_post_wishlist.png 'Endpoint - POST /wishlist')
+
+**`/wishlist/<int:id>`**
+- **HTTP Request Verb:** PUT
+- **Description:** Updates the status of a wishlist entry
+- **Required data:** Valid ID in the URL (e.g. /wishlist/1), `priority` 
+- **Expected response:** `200 OK` response with return of the user and the game title/id updated in the wishlist
+- **Authentication method:** Valid JWT token, admin required
+- ![Endpoint - PUT /wishlist](./docs/endpoint_put_wishlist.png 'Endpoint - PUT /wishlist')
+
+**`/wishlist/<int:id>`**
+- **HTTP Request Verb:** DELETE
+- **Description:** Delete an entry in the game wishlist
+- **Required data:**  Valid ID in the URL (e.g. /wishlist/1)
+- **Expected response:** `200 OK` response with return of the game and details deleted
+- **Authentication method:** Valid JWT token, admin required
+- ![Endpoint - DELETE /wishlist](./docs/endpoint_delete_wishlist.png 'Endpoint - DELETE /wishlist')
 
 ### R6. Entity relationship diagram (ERD)
+
+Below is the Entity Relationship Diagram (ERD) for the game tracker app. The entities are users, games, currently playing games (currently_playing), games in backlog (backlog) and wishlisted games (wishlist). 
+
+The one-to-many relationship between users and currently_playing, backlog and wishlist enable users to have multiple (game) entries in those respective entities or lists. Likewise, the many-to-one relationship between games and currently_playing, backlog and wishlist allows more than one game to be within those entities or lists.
+
+The users columns are purposely kept at a minimum to reduce unnecessary PII. The columns in games could be increased in the future, such as with information about how long a game would take to beat. Likewise, the columns in the currently_playing, backlog, and wishlist tables could be expanded on, but currently have the necessities for the tables to meet their purposes.
+
 ![Game Tracker ERD](./docs/Game_Tracker_ERD.png 'Game Tracker ERD')
 
 ### R7. Third party services used
+
+**Flask (`flask`)**
+- Description: Flask is a lightweight web application framework for Python, providing tools and libraries for building web applications.
+- Usage: Flask is the core framework that organises the overarching templates and blueprints for the app and facilitates features such as API routes for the user authentication and game backlog.
+
+- **SQLAlchemy (`flask_sqlalchemy`)**
+
+
+LAZY LOAD THING
 
 #### Python package dependencies
 
