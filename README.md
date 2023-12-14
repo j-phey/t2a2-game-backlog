@@ -3,7 +3,38 @@
 ### GitHub Repo
 [**t2a2-game-backlog** - GitHub repository link](https://github.com/j-phey/t2a2-game-backlog)
 
+-----
+
 ## API Webserver: Video Game Tracker
+
+**Installation Instructions:**
+
+To install, in a command line, start a PostgreSQL server and create a database called `game_tracker`.
+
+Additionally, open a second command line and run:
+- `python3 -m venv .venv`
+- `source .venv/bin/activate` (if .venv not initiated automatically)
+- `pip install -r requirements.txt`
+- `flask db create`
+- `flask db seed`
+- `flask run`
+
+Open WSL command line and run the following commands:
+Start PostgreSQL server with - sudo service postgresql start
+psql
+create database electrify
+Open a second WSL command line and run the following commands:
+python3 -m venv .venv
+If virtual environment is not automatically activated run - source .venv/bin/activate
+pip install -r requirements.txt
+flask run
+flask db create
+flask db seed
+
+Once the local server is running, use Postman or Hoppscotch.io to query the API server.
+
+-----
+## Requirements
 
 ### R1. Identification of the problem you are trying to solve by building this particular app
 
