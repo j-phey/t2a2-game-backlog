@@ -19,20 +19,6 @@ Additionally, open a second command line and run:
 - `flask db seed`
 - `flask run`
 
-Open WSL command line and run the following commands:
-Start PostgreSQL server with - sudo service postgresql start
-psql
-create database electrify
-Open a second WSL command line and run the following commands:
-python3 -m venv .venv
-If virtual environment is not automatically activated run - source .venv/bin/activate
-pip install -r requirements.txt
-flask run
-flask db create
-flask db seed
-
-Once the local server is running, use Postman or Hoppscotch.io to query the API server.
-
 -----
 ## Requirements
 
